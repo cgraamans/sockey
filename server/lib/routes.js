@@ -3,8 +3,8 @@ exports.init = {
 	pages: [
 
 		{
-			sock:'action',
-			controller:'action'
+			sock:'example',
+			controller:'example'
 		},
 
 	]
