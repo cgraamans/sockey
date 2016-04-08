@@ -29,31 +29,29 @@ Your requirements to install sockey...
 
 ### Step 1: Sockey Setup
 	
-- Install Sockey from Github.
+Install Sockey from Github.
 
 	mkdir <some>/<place>/sockey
 	cd <some>/<place>/sockey
     git clone https://github.com/cgraamans/sockey.git  
 
 
-- Initial Setup:
+Choose your port: Sockey runs on an internal port, unless you decide to reroute it (see step 2).
     
     cd <some>/<place>/sockey/server
     npm install
     vim lib/options.js
 
-    Change the port number to something you like. It will be internal, unless you decide to reroute it.
-
 ### Step 2: Apache Setup
 
-- You will have to create an internal proxy to link the apache webhost to Sockey.
+You will have to create an internal proxy to link the apache webhost to Sockey.
 
     sudo a2enmod rewrite
     sudo a2enmod proxy_http
     sudo a2enmod proxy_wstunnel
     sudo service apache2 restart
 
-- Paste the following into your relevant apache VirtualHost directive. Change the port numbers (highlighted below) to the port you chose installing Sockey.
+Paste the following into your relevant apache VirtualHost directive. Change the port numbers (highlighted below) to the port you chose installing Sockey.
 
     RewriteEngine On
     RewriteCond %{REQUEST_URI}  ^/socket.io            [NC]
