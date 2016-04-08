@@ -56,10 +56,10 @@ Paste the following into your relevant apache VirtualHost directive. Change the 
     RewriteEngine On
     RewriteCond %{REQUEST_URI}  ^/socket.io            [NC]
     RewriteCond %{QUERY_STRING} transport=websocket    [NC]
-    RewriteRule /(.*)           ws://localhost:_8081_/$1 [P,L]
+    RewriteRule /(.*)           ws://localhost:8081/$1 [P,L]
 
-    ProxyPass        /socket.io http://localhost:_8081_/socket.io
-    ProxyPassReverse /socket.io http://localhost:_8081_/socket.io
+    ProxyPass        /socket.io http://localhost:8081/socket.io
+    ProxyPassReverse /socket.io http://localhost:8081/socket.io
 
 _Note:_ There is an example for you in the _init/apache2_ directory you can use in a pinch.
 
