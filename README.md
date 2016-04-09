@@ -118,6 +118,39 @@ exports = module.exports = function(io,socket,opt,sock,callback) {
 };
 ```
 
+#### Example socket emit in a controller function:
+
+```javascript
+socket.emit(sock+opt.socket.data,{
+    "message":"Recieved Example Request",
+    "request-socket":sock,
+});
+```
+
+#### Example for timers and intervals in a controller function:
+
+```javascript
+// INTERVALS: This is how you do Intervals
+var interval = setInterval(function(){
+
+    socket.broadcast.emit(sock+opt.socket.data,{
+        "message":"Global Timed Emit To Everyone But User Every 5 seconds"
+    });
+
+},5000);
+dataCallback.intervals.push(interval);
+
+// TIMEOUTS: This is how you do Timeouts
+var timeout = setTimeout(function(){
+
+    io.emit(sock+opt.socket.data,{"message":"Global Emit To Everyone After 10 seconds"});
+
+},10000);
+dataCallback.timers.push(timeout);
+```
+
+For more information on how sockets work and how to use them, see the [socket.io documentation](http://socket.io/).
+
 ### Step 3 (optional): Create your models
 
 Models are always objects in Sockey. Create your model like so:
@@ -131,4 +164,14 @@ Then add the following to the test-model.js model file:
 exports = {};
 ```
 
+In your controller you can initialize the model thusly:
+
+```javascript
+var testmodel = require('../models/testmodel');
+```
+
 Fill the object with your required models (functions and variables for database connection and interaction).
+
+### Step 4 (optional): Adding globally required libraries
+
+...TBD... 
