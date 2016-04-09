@@ -1,12 +1,18 @@
 # Sockey
-Sockey is a Server-side socket.io MVC Framework
+Sockey is a Server-side socket.io framework
+
+It is an easy-to-use solution for creating quick standalone server-side web socket applications for all your scalable web development needs. 
+
+For those who're unsure what Socket.io is, it's a websocket service. A websocket service is the next step up from AJAX requests; using HTTP calls to keep a connection open between the user's browser and the service, allowing the application to 'push' data to the user when circumstances (on the database or when other users enact actions) change, instead of the user polling for changes from the client regularly. 
+
+Socket.io can be used for web applications, andrioid and iOS application development, allowing you to push data to a user's app.
 
 ## MVC
 Sockey attempts to conform to the classic definition of an MVC Framework. MVC stands for Model, View, Controller. To make a well structured application you need all three of those components.
 
-- A view traditionally denotes what the user sees; the HTML, Javascript and CSS required for the user's interactive experience
-- A model creates a connection to the database and manages the data going to and from the database.
-- A controller manages the flow of information between the view and the model.
+- A **model** creates a connection to the database and manages the data going to and from the database.
+- A **view** traditionally denotes what the user sees; the HTML, Javascript and CSS required for the user's interactive experience. In our Server-side MVC, these don't traditionally exist because we're passing data to the client, where views will be handled separately. Instead, the 'view' here are the socket and io emits.
+- A **controller** manages the flow of information between the view and the model.
 
 Since modern day applications need to be infinitely scalable, physical separation of Views from Models and Controllers which handle data is becoming a standard requirement for projects. Enter Socket.io. Socket.io is a NODEJS websocket application which allows you to keep a connection open between the user-side application, running locally on a user's machine (or tablet or whatever), and the server managing the information coming from the database. It allows you to 'push' information to the user without them having to request data first.
 
@@ -28,11 +34,11 @@ Your requirements to install sockey...
     sudo apt-get nodejs npm
 
 ### Step 1: Sockey Setup
-	
+    
 Install Sockey from Github.
 
-	mkdir <some>/<place>/sockey
-	cd <some>/<place>/sockey
+    mkdir <some>/<place>/sockey
+    cd <some>/<place>/sockey
     git clone https://github.com/cgraamans/sockey.git  
 
 
@@ -69,11 +75,60 @@ If your server supports upstart, you can use the template in the _init/upstart_ 
 
 ### Step 4 (optional): Test client Setup
 
-If you quickly want to test the client functionality, there is a template in the _init/apache2_ directory for you to use for setting up the test client. Also do the following to ensure you have socket.io installed:
+If you quickly want to test the client functionality, there is a sliver of a client in the client directory for you to use. Also do the following to ensure you have socket.io installed for the client:
 
     cd <some>/<place>/sockey/client
     npm install
 
 ## Usage
 
-.. TBD ..
+### Step 1: Create a route
+
+First, edit your routes file.
+
+    vim lib/routes.js
+
+Then, change the example route or add a new object to the routes array.
+
+### Step 2: Create a controller
+
+    touch controllers/test.js
+    vim controllers/test.js
+
+Add the following code to your test.js controller file:
+
+```javascript
+exports = module.exports = function(io,socket,opt,sock,callback) {
+
+    return function(data) {
+        var dataCallback = {timers:[],intervals:[]};
+
+        // CONTROLLER CODE
+
+            //
+            // YOUR CODE GOES HERE...
+            //
+
+        // CONTROLLER CODE ENDS HERE
+
+        callback(dataCallback);
+
+    }
+
+};
+```
+
+### Step 3 (optional): Create your models
+
+Models are always objects in Sockey. Create your model like so:
+
+    touch models/test-model.js
+    vim models/test-model.js
+
+Then add the following to the test-model.js model file:
+
+```javascript
+exports = {};
+```
+
+Fill the object with your required models (functions and variables for database connection and interaction).
