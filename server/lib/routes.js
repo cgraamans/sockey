@@ -1,6 +1,6 @@
-exports.init = {
+module.exports = {
 
-	pages: [
+	route: [
 
 		{
 			sock:'example',

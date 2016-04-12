@@ -1,14 +1,17 @@
 // Initialize Application
-var opt = require('./lib/options').init;
-var	io = require('socket.io')(opt.port),
-	routes = require('./lib/routes').init,
+var opt = require('./lib/options');
+var sockey = require('./lib/sockey');
+sockey.io = require('socket.io')(opt.port),
+	routes = require('./lib/routes'),
 	timers = intervals = [];
 
-io.on('connection', function(socket) {
-	
-	routes.pages.forEach(function(page) {
+sockey.io.on('connection', function(socket) {
+	sockey.socket = socket;
+	sockey.db.connect(opt.db);
 
-		socket.on(page.sock,require(opt.ctrls+page.controller)(io,socket,opt,page.sock,function(times){
+	routes.route.forEach(function(route) {
+
+		socket.on(route.sock,require(opt.ctrls+route.controller)(sockey,opt,route.sock,function(times){
 
 			if (typeof times !== 'undefined') {
 
@@ -44,7 +47,9 @@ io.on('connection', function(socket) {
 		// clear all timers, if passed
 		timers.forEach(function(iv){	
 			clearTimeout(iv);
-		}) 		
+		});
+
+		sockey.db.disconnect();
 
 	});
 

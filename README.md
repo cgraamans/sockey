@@ -164,13 +164,13 @@ Then add the following to the test-model.js model file:
 exports = {};
 ```
 
+Fill the object with your required models (functions and variables for database connection and interaction).
+
 In your controller you can initialize the model thusly:
 
 ```javascript
-var testmodel = require('../models/testmodel');
+var testmodel = require('../models/test-model');
 ```
-
-Fill the object with your required models (functions and variables for database connection and interaction).
 
 ### Step 4 (optional): Adding globally required libraries
 
