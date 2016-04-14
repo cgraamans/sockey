@@ -7,7 +7,7 @@ For those who're unsure what Socket.io is, it's a websocket service. A websocket
 
 Socket.io can be used for web applications, andrioid and iOS application development, allowing you to push data to a user's app.
 
-### NOTICE: [The original sockey mini-framework is now available as sockey-core here](https://github.com/cgraamans/sockey-core).
+#### NOTICE: [The original sockey mini-framework is now available as sockey-core here](https://github.com/cgraamans/sockey-core).
 
 ## MVC
 Sockey attempts to conform to the classic definition of an MVC Framework. MVC stands for Model, View, Controller. To make a well structured application you need all three of those components.
