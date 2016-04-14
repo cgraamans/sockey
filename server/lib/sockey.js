@@ -31,13 +31,20 @@ module.exports = {
 			var simple = {sql:sql_str};
 			simple.timeout = 40000;
 
+			if (val.isArray === true) {
+				simple.values = val;	
+			} else {
+				simple.values = [val];
+			}
+			
+
 			if (typeof this.connection !== 'undefined') {
 
 				if (this.connection !== false) {
 
 					this.connection.query(simple, function(error,rslt){
 
-						if (err) {
+						if (error) {
 							rtn.err = error;
 						} else {
 							rtn.res = rslt;

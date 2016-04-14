@@ -6,6 +6,11 @@ module.exports = {
 			sock:'example',
 			controller:'example'
 		},
+		
+		{
+			sock:'auth',
+			controller:'auth',
+		},
 
 	]
 }

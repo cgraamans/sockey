@@ -4,30 +4,87 @@
 		<script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
 		<script src="/node_modules/socket.io/node_modules/socket.io-client/socket.io.js"></script>
 
-</head>
-<body>
-	<div style="height:20px;font-size:18px;line-height:18px;font-face:Arial, sans-serif;" id="example-text"></div>
-	<button id="example">Click To Activate Example!</button>
+	</head>
+	<body style="width:100%;height:100%;font-face:Arial,font-size:0.8em;">
 
-		<script>
-		  var socket = io('http://sockey.api');
+		<div style="float:left;width:40%;height:100%;">
+			<h1>Sockey Example Page</h1>
 
-		  $('body').on('click','#example',function(e){
+			<h2>Test Examples</h2>
+			<button id="example">Click To Activate Example!</button>
 
-			console.log('click!');
-			socket.emit('example',{"foo":"bar"});
-		  
-		  });
+			<hr>
 
-		  socket.on('example_data',function(d){
+			<h2>Register Example</h2>
+			<div style="width:100%;">
+				<form id="register">
+					<input type="text" name="name" placeholder='name'><br>
+					<input type="email" name="email" placeholder='email'><br>
+					<input type="password" name="password" placeholder='password'><br>
+					<button type="submit">Register!</button>
+				</form>
+			</div>
 
-		  	$("#example-text").html(d.message);
-		  	console.log(d);
+			<hr>
 
-		  });
+			<h2>Login Example</h2>
+			<div style="width:100%;">
+				<form id="login">
+					<input type="text" name="name" placeholder='name'><br>
+					<input type="password" name="password" placeholder='password'><br>
+					<button type="submit">Login!</button>
+				</form>
+			</div>
 
-		</script>
+			<script>
+
+				var socket = io('http://sockey.api');
+
+				$('body').on('click','#example',function(e){
+
+					console.log('click!');
+					socket.emit('example',{"foo":"bar"});
+
+				});
 
 
-</body>
+				$('body').on('submit','#register',function(e){
+
+					e.preventDefault();
+
+					console.log('register!');
+
+					var pass = {type:'register',user:{}};
+				
+					pass.user.name = $(this).find('input[name="name"]').val();
+					pass.user.email = $(this).find('input[name=email]').val();
+					pass.user.password = $(this).find('input[name=password]').val();
+					console.log(pass);
+
+					socket.emit('auth',pass);
+
+				});
+
+				socket.on('example_data',function(d){
+
+					$("#example-text").append(d.message+'<br>');
+					console.log(d);
+
+				});
+
+				socket.on('auth_error',function(d){
+
+					$("#example-text").append("<span style='color:red;'>"+d.err+'</span><br>');
+					console.log(d);
+
+				}); 
+
+			</script>
+
+		</div>
+		<div style="float:left;width:40%;height:100%;padding:5px;" id="example-text">
+
+		</div>
+
+	</body>
 </html>

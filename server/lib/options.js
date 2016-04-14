@@ -6,12 +6,21 @@ module.exports = {
 		error:'_error',
 		data:'_data',
 	},
+
 	// Database settings
 	db:{
 		host:'localhost',
 		user:'sockeyuser',
 		password:'sockeypassword',
 		database:'sockeydb'		
+	},
+
+	// Authorization settings
+	auth: {
+
+		enabled: true,
+		register_email: true,
+
 	},
 	
 	// Server settings
