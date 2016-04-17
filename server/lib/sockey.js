@@ -32,9 +32,13 @@ module.exports = {
 			simple.timeout = 40000;
 
 			if (val.isArray === true) {
-				simple.values = val;	
+
+				simple.values = val;
+
 			} else {
+
 				simple.values = [val];
+
 			}
 			
 
@@ -69,19 +73,6 @@ module.exports = {
 			}
 
 		},
-
-		ins: function(){},
-
-		upd: function(){},
-
-		del: function(){},
-
-	},
-
-	// Broadcast
-	bc: {
-
-		emit: function(){}
 
 	},
 

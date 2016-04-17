@@ -18,8 +18,19 @@ module.exports = {
 	// Authorization settings
 	auth: {
 
-		enabled: true,
+		socket:'auth',
 		register_email: true,
+		token_timeout:86400,
+		lengths: {
+			password: {
+				min:5,
+				max:60,
+			},
+			username: {
+				min:3,
+				max:32,
+			},
+		},
 
 	},
 	

@@ -1,4 +1,4 @@
-exports = module.exports = function(sockey,opt,sock,callback) {
+exports = module.exports = function(sockey,sock,callback) {
 
 
 	return function(data) {
@@ -17,14 +17,14 @@ exports = module.exports = function(sockey,opt,sock,callback) {
 			// Load models first
 			var examples = require('../models/examples');
 
-			sockey.socket.emit(sock+opt.socket.data,{
+			sockey.socket.emit(sock+sockey.opt.socket.data,{
 				"message":"Recieved Example Request"
 			});
 
 			// INTERVALS: This is how you do Intervals
 			var interval = setInterval(function(){
 
-				sockey.socket.broadcast.emit(sock+opt.socket.data,{
+				sockey.socket.broadcast.emit(sock+sockey.opt.socket.data,{
 					"message":"Global Timed Emit To Everyone But User Every 5 seconds"
 				});
 
@@ -34,7 +34,7 @@ exports = module.exports = function(sockey,opt,sock,callback) {
 			// TIMEOUTS: This is how you do Timeouts
 			var timeout = setTimeout(function(){
 
-				sockey.io.emit(sock+opt.socket.data,{"message":"Global Emit To Everyone After 10 seconds"});
+				sockey.io.emit(sock+sockey.opt.socket.data,{"message":"Global Emit To Everyone After 10 seconds"});
 
 			},10000);
 			dataCallback.timers.push(timeout);

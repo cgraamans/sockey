@@ -1,15 +1,71 @@
-exports = module.exports = function(sockey,opt,sock,callback) {
+exports = module.exports = function(sockey,sock,callback) {
 
+	var run = {
+
+		emitters: {},
+		modules: {},
+		registration: function(sockey,data,emit,cb) {
+
+			var that = this;
+			this.modules.auths.register(sockey,data.user,function(r) {
+
+				if (r.ok === true) {
+
+					emit.ok = true,
+					emit.res = r.res;
+					cb(emit);
+
+				} else {
+
+					emit.err = r.err;
+					cb(emit);
+
+				}
+
+			});
+
+		},
+
+		login: function(sockey,data,emit,cb) {
+
+			var that = this;
+			this.modules.auths.login(sockey,data.user,function(l){
+
+				if (l.ok === true) {
+
+					emit.ok = true,
+					emit.res = l.res;
+					cb(emit);
+
+				} else {
+
+					emit.err = l.err
+					cb(emit);
+
+				}
+
+			});
+
+		}
+
+	};
 
 	return function(data) {
+
 		// Note: Data is the request object passed by the socket.
 		var dataCallback = {timers:[],intervals:[]};
 
 		// CONTROLLER CODE
+			
+			var that = this;
+
 			var emit = {
 				ok:false,
 				err:false,
 			};
+
+			run.emitters.error = sock+sockey.opt.socket.error;
+			run.emitters.data = sock+sockey.opt.socket.data;
 
 			if (typeof data !== 'object') {
 
@@ -45,127 +101,126 @@ exports = module.exports = function(sockey,opt,sock,callback) {
 
 			if (emit.err === false) {
 
-				var validator = require('validator');
-				if (validator.isLength(data.user.name,{max:32}) === true) {
+				run.modules.auths = require('../models/auths');
+				if (data.type === 'register') {
 
-					if (validator.matches(data.user.name,'^[a-zA-Z0-9!@#$%^&*]*$','g') === true) {
+					var validator = require('validator');
+					if (validator.isLength(data.user.name,sockey.opt.auth.lengths.username) === true) {
 
-						if (validator.matches(data.user.password,'^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]*$','g') === true) {
+						if (validator.matches(data.user.name,'^[a-zA-Z0-9!@#$%^&*]*$','g') === true) {
 
-							var auths = require('../models/auths');
-							if (data.type === 'register') {
+							if (validator.isLength(data.user.password,sockey.opt.auth.lengths.password) === true) {
 
-								if (opt.auth.register_email === true) {
+								if (validator.matches(data.user.password,'^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]*$','g') === true) {
 
-									if (typeof data.user.email !== 'undefined') {
+									if (sockey.opt.auth.register_email === true) {
 
-										if (validator.isEmail(data.user.email) === true) {
+										if (typeof data.user.email !== 'undefined') {
 
-											auths.register(sockey.db,data.user,function(r) {
+											if (validator.isEmail(data.user.email) === true) {
 
-												if (r.ok === true) {
+												run.registration(sockey,data,emit,function(reg) {
 
-													// auths.login(sockey.db,data.user,function(l){
+													var emitter = run.emitters.error;
+													if (reg.ok === true ) {
 
-													// 	if (l.ok === true) {
+														emitter = run.emitters.data;
+													
+													}
+													sockey.socket.emit(emitter,reg);
+													callback(dataCallback);
 
-													// 		emit.ok = true,
-													// 		emit.res = l.res;
-													// 		sockey.socket.emit(sock+opt.socket.data,emit);
+												});
 
-													// 	} else {
+											} else {
 
-													// 		emit.err = l.err
-													// 		sockey.socket.emit(sock+opt.socket.error,emit);
+												emit.err = 'Email address is invalid.';
+												sockey.socket.emit(run.emitters.error,emit);
+												callback(dataCallback);
 
-													// 	}
-
-													// });
-
-												} else {
-
-													emit.err = r.err
-													sockey.socket.emit(sock+opt.socket.error,emit);
-
-												}
-
-											});
+											}
 
 										} else {
 
-											emit.err = 'Email address is invalid.';
-											sockey.socket.emit(sock+opt.socket.error,emit);
+											emit.err = 'Email address needed.';
+											sockey.socket.emit(run.emitters.error,emit);
+											callback(dataCallback);
 
 										}
-
+										
 									} else {
 
-										emit.err = 'Email address needed.';
-										sockey.socket.emit(sock+opt.socket.error,emit);
+										run.registration(sockey,data,emit,function(reg){
 
+											var emitter = run.emitters.error;
+											if (reg.ok === true) {
+
+												emitter = run.emitters.data;
+											
+											}
+											sockey.socket.emit(emitter,reg);
+											callback(dataCallback);
+
+										});
 									}
-									
+
 								} else {
 
-									console.log('register!');
+									emit.err = 'Password must contain letters and at least one special character and one number.';
+									sockey.socket.emit(run.emitters.error,emit);
+									callback(dataCallback);
 
 								}
 
-							}
+							} else {
 
+								emit.err = 'Password must be between 6 and 60 characters long.';
+								sockey.socket.emit(run.emitters.error,emit);
+								callback(dataCallback);
 
-							if (data.type === 'login') {
-
-								// auths.login(sockey.db,data.user,function(l) {
-
-								// 	if (l.ok === true) {
-
-								// 		emit.ok = true,
-								// 		emit.res = l.res;
-								// 		sockey.socket.emit(sock+opt.socket.data,emit);
-
-								// 	} else {
-
-								// 		emit.err = l.err
-								// 		sockey.socket.emit(sock+opt.socket.error,emit);
-
-								// 	}
-
-								// });
-
-							}
+							}							
 
 						} else {
 
-							emit.err = 'Password must contain letters and at least one special character and one number.';
-							sockey.socket.emit(sock+opt.socket.error,emit);
+							emit.err = 'Usernames may contain letters, special characters and numbers.';
+							sockey.socket.emit(run.emitters.error,emit);
+							callback(dataCallback);
 
 						}
 
 					} else {
 
-						emit.err = 'Usernames may contain letters, special characters and numbers.';
-						sockey.socket.emit(sock+opt.socket.error,emit);
+						emit.err = 'User name must be between 3 and 32 Characters..';
+						sockey.socket.emit(run.emitters.error,emit);
+						callback(dataCallback);
 
 					}
 
-				} else {
+				}
 
-					emit.err = 'User name too long; must be under 32 Characters..';
-					sockey.socket.emit(sock+opt.socket.error,emit);
+				if (data.type === 'login') {
+
+					run.login(sockey,data,emit,function(li){
+
+						var emitter = run.emitters.error;
+						if (li.ok === true) {
+							emitter = run.emitters.data;
+						}
+						sockey.socket.emit(emitter,li);
+						callback(dataCallback);
+
+					});
 
 				}
 
 			} else {
 
-				sockey.socket.emit(sock+opt.socket.error,emit);
+				sockey.socket.emit(run.emitters.error,emit);
+				callback(dataCallback);
 
 			}
 
 		// CONTROLLER CODE ENDS HERE
-
-		callback(dataCallback); // DO NOT REMOVE
-		// NOTE: - callback is an array of objects for interval and time-out cancellation on socket destruction. If no timers are set, leave as is.
 
 	}
 

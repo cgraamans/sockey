@@ -32,6 +32,7 @@
 				<form id="login">
 					<input type="text" name="name" placeholder='name'><br>
 					<input type="password" name="password" placeholder='password'><br>
+					<input type="checkbox" value="1" name="rememberme" CHECKED> Remember me<br>
 					<button type="submit">Login!</button>
 				</form>
 			</div>
@@ -42,7 +43,6 @@
 
 				$('body').on('click','#example',function(e){
 
-					console.log('click!');
 					socket.emit('example',{"foo":"bar"});
 
 				});
@@ -51,15 +51,25 @@
 				$('body').on('submit','#register',function(e){
 
 					e.preventDefault();
-
-					console.log('register!');
-
 					var pass = {type:'register',user:{}};
 				
 					pass.user.name = $(this).find('input[name="name"]').val();
 					pass.user.email = $(this).find('input[name=email]').val();
 					pass.user.password = $(this).find('input[name=password]').val();
-					console.log(pass);
+
+					socket.emit('auth',pass);
+
+				});
+
+
+				$('body').on('submit','#login',function(e){
+
+					e.preventDefault();
+					var pass = {type:'login',user:{}};
+				
+					pass.user.name = $(this).find('input[name="name"]').val();
+					pass.user.password = $(this).find('input[name=password]').val();
+					pass.user.persistent = $(this).find('input[name=rememberme]').is(':checked');
 
 					socket.emit('auth',pass);
 
@@ -68,14 +78,20 @@
 				socket.on('example_data',function(d){
 
 					$("#example-text").append(d.message+'<br>');
+
+				});
+
+				socket.on('auth_data',function(d){
+
 					console.log(d);
 
+					$("#example-text").append("Token recieved: <span style='color:green;'>"+d.res+'</span><br>');
+				
 				});
 
 				socket.on('auth_error',function(d){
 
 					$("#example-text").append("<span style='color:red;'>"+d.err+'</span><br>');
-					console.log(d);
 
 				}); 
 
