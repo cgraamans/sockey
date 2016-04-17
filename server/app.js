@@ -6,16 +6,21 @@ var sockey = require('./lib/sockey');
 	routes = require('./lib/routes'),
 	timers = intervals = [];
 
+sockey.opt.modules.autoload.forEach(function(load) {
+
+	sockey.opt.modules.obj[load.name] = require(load.mod);
+
+});
+
 sockey.io.on('connection', function(socket) {
 
-	sockey.socket = socket;
 	sockey.db.connect(sockey.opt.db);
 
 	routes.route.forEach(function(route) {
 
 		socket.on(route.sock,function(data) {
 
-			require(sockey.opt.ctrls+route.controller)(sockey,route.sock,function(times){
+			require(sockey.opt.ctrls+route.controller)(sockey,socket,route.sock,function(times){
 
 				if (typeof times !== 'undefined') {
 

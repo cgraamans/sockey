@@ -1,4 +1,4 @@
-exports = module.exports = function(sockey,sock,callback) {
+exports = module.exports = function(sockey,socket,sock,callback) {
 
 	var run = {
 
@@ -127,7 +127,7 @@ exports = module.exports = function(sockey,sock,callback) {
 														emitter = run.emitters.data;
 													
 													}
-													sockey.socket.emit(emitter,reg);
+													socket.emit(emitter,reg);
 													callback(dataCallback);
 
 												});
@@ -135,7 +135,7 @@ exports = module.exports = function(sockey,sock,callback) {
 											} else {
 
 												emit.err = 'Email address is invalid.';
-												sockey.socket.emit(run.emitters.error,emit);
+												socket.emit(run.emitters.error,emit);
 												callback(dataCallback);
 
 											}
@@ -143,13 +143,14 @@ exports = module.exports = function(sockey,sock,callback) {
 										} else {
 
 											emit.err = 'Email address needed.';
-											sockey.socket.emit(run.emitters.error,emit);
+											socket.emit(run.emitters.error,emit);
 											callback(dataCallback);
 
 										}
 										
 									} else {
 
+										data.user.email = null;
 										run.registration(sockey,data,emit,function(reg){
 
 											var emitter = run.emitters.error;
@@ -158,7 +159,7 @@ exports = module.exports = function(sockey,sock,callback) {
 												emitter = run.emitters.data;
 											
 											}
-											sockey.socket.emit(emitter,reg);
+											socket.emit(emitter,reg);
 											callback(dataCallback);
 
 										});
@@ -167,7 +168,7 @@ exports = module.exports = function(sockey,sock,callback) {
 								} else {
 
 									emit.err = 'Password must contain letters and at least one special character and one number.';
-									sockey.socket.emit(run.emitters.error,emit);
+									socket.emit(run.emitters.error,emit);
 									callback(dataCallback);
 
 								}
@@ -175,7 +176,7 @@ exports = module.exports = function(sockey,sock,callback) {
 							} else {
 
 								emit.err = 'Password must be between 6 and 60 characters long.';
-								sockey.socket.emit(run.emitters.error,emit);
+								socket.emit(run.emitters.error,emit);
 								callback(dataCallback);
 
 							}							
@@ -183,7 +184,7 @@ exports = module.exports = function(sockey,sock,callback) {
 						} else {
 
 							emit.err = 'Usernames may contain letters, special characters and numbers.';
-							sockey.socket.emit(run.emitters.error,emit);
+							socket.emit(run.emitters.error,emit);
 							callback(dataCallback);
 
 						}
@@ -191,7 +192,7 @@ exports = module.exports = function(sockey,sock,callback) {
 					} else {
 
 						emit.err = 'User name must be between 3 and 32 Characters..';
-						sockey.socket.emit(run.emitters.error,emit);
+						socket.emit(run.emitters.error,emit);
 						callback(dataCallback);
 
 					}
@@ -204,9 +205,11 @@ exports = module.exports = function(sockey,sock,callback) {
 
 						var emitter = run.emitters.error;
 						if (li.ok === true) {
+
 							emitter = run.emitters.data;
+
 						}
-						sockey.socket.emit(emitter,li);
+						socket.emit(emitter,li);
 						callback(dataCallback);
 
 					});
@@ -215,7 +218,7 @@ exports = module.exports = function(sockey,sock,callback) {
 
 			} else {
 
-				sockey.socket.emit(run.emitters.error,emit);
+				socket.emit(run.emitters.error,emit);
 				callback(dataCallback);
 
 			}

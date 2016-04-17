@@ -1,4 +1,4 @@
-exports = module.exports = function(sockey,sock,callback) {
+exports = module.exports = function(sockey,socket,sock,callback) {
 
 
 	return function(data) {
@@ -7,37 +7,33 @@ exports = module.exports = function(sockey,sock,callback) {
 
 		// CONTROLLER CODE
 
-			//
-			// YOUR CODE GOES HERE...
-			//
-
 			// EXAMPLE CODE
-			console.log('Example Loaded;');
 
-			// Load models first
-			var examples = require('../models/examples');
+				// Load models first
+				var examples = require('../models/examples');
 
-			sockey.socket.emit(sock+sockey.opt.socket.data,{
-				"message":"Recieved Example Request"
-			});
-
-			// INTERVALS: This is how you do Intervals
-			var interval = setInterval(function(){
-
-				sockey.socket.broadcast.emit(sock+sockey.opt.socket.data,{
-					"message":"Global Timed Emit To Everyone But User Every 5 seconds"
+				// Emit on receival
+				socket.emit(sock+sockey.opt.socket.data,{
+					"message":"Recieved Example Request"
 				});
 
-			},5000);
-			dataCallback.intervals.push(interval);
+				// INTERVALS: This is how you do Intervals
+				var interval = setInterval(function(){
 
-			// TIMEOUTS: This is how you do Timeouts
-			var timeout = setTimeout(function(){
+					socket.broadcast.emit(sock+sockey.opt.socket.data,{
+						"message":"Global Timed Emit To Everyone But User Every 5 seconds"
+					});
 
-				sockey.io.emit(sock+sockey.opt.socket.data,{"message":"Global Emit To Everyone After 10 seconds"});
+				},5000);
+				dataCallback.intervals.push(interval);
 
-			},10000);
-			dataCallback.timers.push(timeout);
+				// TIMEOUTS: This is how you do Timeouts
+				var timeout = setTimeout(function(){
+
+					sockey.io.emit(sock+sockey.opt.socket.data,{"message":"Global Emit To Everyone After 10 seconds"});
+
+				},10000);
+				dataCallback.timers.push(timeout);
 
 			// EXAMPLE CODE ENDS HERE
 

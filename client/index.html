@@ -4,103 +4,177 @@
 		<script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
 		<script src="/node_modules/socket.io/node_modules/socket.io-client/socket.io.js"></script>
 
-	</head>
-	<body style="width:100%;height:100%;font-face:Arial,font-size:0.8em;">
+		<style>
+			body {
+				width:100%;
+				height:100%;
+				font-family:Arial,sans-serif;
+				font-size:0.8em;
+				margin:0;padding:0;
+			}
+			input[type=text], input[type=password], input[type=email] {
+			    border-radius: 5px;
+			    padding: 5px;
+			    min-width: 67%;
+			    min-height: 18px;
+			    margin: 3px;
+			}
+			#top {
+				width:calc( 100% - 10px );
+				height:70px;
+				background-color:#000;
+				color:#FFF;
+				padding-left:10px;
+				-webkit-box-shadow:0px 1px 1px #000;
+				-moz-box-shadow:0px 1px 1px #000;
+				box-shadow:0px 1px 1px #000;
+			}
+			#middle {
+				margin-top:10px;
+				width:100%;
+			}
+			.side {
 
-		<div style="float:left;width:40%;height:100%;">
+				float:left;
+				width:40%;
+				padding:5px;
+			}
+			.shallow {
+				font-size:0.8em;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="top">
+
 			<h1>Sockey Example Page</h1>
 
-			<h2>Test Examples</h2>
-			<button id="example">Click To Activate Example!</button>
+		</div>
+		<div id="middle">
+			<div class="side">
 
-			<hr>
+				<h2>Test Examples</h2>
+				<button id="example">Click To Activate Example!</button>
 
-			<h2>Register Example</h2>
-			<div style="width:100%;">
-				<form id="register">
-					<input type="text" name="name" placeholder='name'><br>
-					<input type="email" name="email" placeholder='email'><br>
-					<input type="password" name="password" placeholder='password'><br>
-					<button type="submit">Register!</button>
+				<h2>Test User Tokens</h2>
+				<form id="keytest">
+					<input type="text" name="name" placeholder="name"><br>
+					<input type="text" name="key" placeholder="token"><br>
+					<button type="submit">Test this token</button>
 				</form>
+
+				<h2>Register Example</h2>
+				<div style="width:100%;">
+					<form id="register">
+						<input type="text" name="name" placeholder='name'><br>
+						<input type="email" name="email" placeholder='email'><br>
+						<input type="password" name="password" placeholder='password'><br>
+						<button type="submit">Register!</button>
+					</form>
+				</div>
+
+				<h2>Login Example</h2>
+				<div style="width:100%;">
+					<form id="login">
+						<input type="text" name="name" placeholder='name'><br>
+						<input type="password" name="password" placeholder='password'><br>
+						<input type="checkbox" value="1" name="rememberme" CHECKED> Remember me<br>
+						<button type="submit">Login!</button>
+					</form>
+				</div>
+
+			</div>
+			<div class="side shallow" id="example-text">
+
 			</div>
 
-			<hr>
-
-			<h2>Login Example</h2>
-			<div style="width:100%;">
-				<form id="login">
-					<input type="text" name="name" placeholder='name'><br>
-					<input type="password" name="password" placeholder='password'><br>
-					<input type="checkbox" value="1" name="rememberme" CHECKED> Remember me<br>
-					<button type="submit">Login!</button>
-				</form>
-			</div>
-
-			<script>
-
-				var socket = io('http://sockey.api');
-
-				$('body').on('click','#example',function(e){
-
-					socket.emit('example',{"foo":"bar"});
-
-				});
-
-
-				$('body').on('submit','#register',function(e){
-
-					e.preventDefault();
-					var pass = {type:'register',user:{}};
-				
-					pass.user.name = $(this).find('input[name="name"]').val();
-					pass.user.email = $(this).find('input[name=email]').val();
-					pass.user.password = $(this).find('input[name=password]').val();
-
-					socket.emit('auth',pass);
-
-				});
-
-
-				$('body').on('submit','#login',function(e){
-
-					e.preventDefault();
-					var pass = {type:'login',user:{}};
-				
-					pass.user.name = $(this).find('input[name="name"]').val();
-					pass.user.password = $(this).find('input[name=password]').val();
-					pass.user.persistent = $(this).find('input[name=rememberme]').is(':checked');
-
-					socket.emit('auth',pass);
-
-				});
-
-				socket.on('example_data',function(d){
-
-					$("#example-text").append(d.message+'<br>');
-
-				});
-
-				socket.on('auth_data',function(d){
-
-					console.log(d);
-
-					$("#example-text").append("Token recieved: <span style='color:green;'>"+d.res+'</span><br>');
-				
-				});
-
-				socket.on('auth_error',function(d){
-
-					$("#example-text").append("<span style='color:red;'>"+d.err+'</span><br>');
-
-				}); 
-
-			</script>
-
 		</div>
-		<div style="float:left;width:40%;height:100%;padding:5px;" id="example-text">
 
-		</div>
+		<script>
+
+			var socket = io('http://sockey.api');
+
+			$('body').on('click','#example',function(e){
+
+				socket.emit('example',{"foo":"bar"});
+
+			});
+
+
+			$('body').on('submit','#register',function(e){
+
+				e.preventDefault();
+				var pass = {type:'register',user:{}};
+			
+				pass.user.name = $(this).find('input[name="name"]').val();
+				pass.user.email = $(this).find('input[name=email]').val();
+				pass.user.password = $(this).find('input[name=password]').val();
+
+				socket.emit('auth',pass);
+
+			});
+
+			$('body').on('submit','#keytest',function(e){
+				e.preventDefault();
+
+				var pass = {
+					user:{},
+					data:{bla:'blabla'},
+					more_data:'bladiebladiebla'
+				};
+
+				pass.user.name = $(this).find('input[name="name"]').val();
+				pass.user.key = $(this).find('input[name=key]').val();
+
+				socket.emit('keytest',pass);
+
+			});
+
+			$('body').on('submit','#login',function(e){
+
+				e.preventDefault();
+				var pass = {type:'login',user:{}};
+			
+				pass.user.name = $(this).find('input[name="name"]').val();
+				pass.user.password = $(this).find('input[name=password]').val();
+				pass.user.persistent = $(this).find('input[name=rememberme]').is(':checked');
+
+				socket.emit('auth',pass);
+
+			});
+
+			socket.on('example_data',function(d){
+
+				$("#example-text").append(d.message+'<br>');
+
+			});
+
+			socket.on('auth_data',function(d){
+
+				$("#example-text").append("Token recieved: <span style='color:green;'>"+d.res.name+'|'+d.res.token+'</span><br>');
+			
+			});
+
+			socket.on('auth_error',function(d){
+
+				$("#example-text").append("<span style='color:red;'>"+d.err+'</span><br>');
+
+			}); 
+
+
+			socket.on('keytest_data',function(d){
+
+				$("#example-text").append("Key test successful: <span style='color:green;'>"+d.res+'</span><br>');
+			
+			});
+
+			socket.on('keytest_error',function(d){
+
+				$("#example-text").append("<span style='color:red;'>"+d.err+'</span><br>');
+
+			}); 
+		</script>
+
 
 	</body>
 </html>

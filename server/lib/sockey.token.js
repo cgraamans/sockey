@@ -7,7 +7,7 @@ module.exports = {
 
 	},
 
-	check: function(sockey,user,callback) {
+	check: function(sockey,socket,user,callback) {
 
 		var that = this;
 
@@ -22,45 +22,50 @@ module.exports = {
 			if ((typeof user.key !== 'undefined') && (typeof user.name !== 'undefined')) {
 
 				var keycheck = {
-					sql:"SELECT u.id, uk.persistent, uk.insdate FROM users INNER JOIN user_keys uk ON uk.user_id = u.id WHERE u.name = ? AND uk.tokey = ?",
+					sql:"SELECT u.id, uk.persistent, uk.insdate FROM users as u INNER JOIN user_keys uk ON uk.user_id = u.id WHERE u.name = ? AND uk.tokey = ?",
 					values:[user.name,user.key],
 					timeout:4000,
 				};
 
-				this.db.connection.query(keycheck, function (error, results) {
+				sockey.db.connection.query(keycheck, function (error, results) {
 
 					if (error === null) {
 
 						if (results.length > 0) {
 
-							if ((results[0].insdate < (Math.round(Date.now/1000) - sockey.opt.auth.token_timeout)) && (results[0].persistent > 0)) {
+							if (results[0].insdate < (Math.round(Date.now()/1000) - sockey.opt.auth.token_timeout)) {
 
-								that.update(sockey,user,function(ree) {
+								if (parseInt(results[0].persistent) < 1) {
 
-									if (ree.ok === true) {
-
-										rtn.ok = true;
-										rtn.res = results[0].id;
-
-										sockey.socket.emit(sockey.opt.auth.socket+sockey.opt.socket.data,{
-											ok:true,
-											res:{
-												name:user.name,
-												key:ree.res,
-											},
-											err:false,
-										});
-
-									} else {
-
-										sockey.socket.disconnect();
-										rtn.err = 'Error Updating Socket.';
-										rtn.reload = true;
-
-									}
+									rtn.err = 'Logged out.';									
 									callback(rtn);
 
-								});
+								} else {
+
+									user.id = results[0].id;
+									that.update(sockey,user,function(ree) {
+
+										if (ree.ok === true) {
+
+											rtn.ok = true;
+											rtn.res = results[0].id;
+
+											socket.emit(sockey.opt.auth.socket+sockey.opt.socket.data,{
+												ok:true,
+												res:ree.res,
+												err:false,
+											});
+
+										} else {
+
+											rtn.err = ree.err;
+
+										}
+										callback(rtn);
+
+									});
+
+								}
 
 							} else {
 
