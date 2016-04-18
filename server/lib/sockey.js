@@ -6,21 +6,11 @@ module.exports = {
 		connect: function(options) {
 
 			var mysql = require('mysql');
-			if (typeof mysql !== 'undefined') {
-				this.connection = mysql.createConnection(options);			
-			}
+			return mysql.createConnection(options);			
 
 		},
 
-		disconnect: function() {
-
-			if (typeof(this.connection) !== 'undefined') {
-				this.connection.end();	
-			}
-		
-		},
-
-		get: function(sql_str,val,callback){
+		exec: function(sql_str,val,run,callback){
 
 			var rtn = {
 				ok:false,
@@ -31,13 +21,24 @@ module.exports = {
 			var simple = {sql:sql_str};
 			simple.timeout = 40000;
 
-			if (typeof this.connection !== 'undefined') {
+			if (val.isArray === true) {
 
-				if (this.connection !== false) {
+				simple.values = val;
 
-					this.connection.query(simple, function(error,rslt){
+			} else {
 
-						if (err) {
+				simple.values = [val];
+
+			}
+			
+
+			if (typeof run.db !== 'undefined') {
+
+				if (run.db !== false) {
+
+					run.db.query(simple, function(error,rslt) {
+
+						if (error) {
 							rtn.err = error;
 						} else {
 							rtn.res = rslt;
@@ -62,19 +63,6 @@ module.exports = {
 			}
 
 		},
-
-		ins: function(){},
-
-		upd: function(){},
-
-		del: function(){},
-
-	},
-
-	// Broadcast
-	bc: {
-
-		emit: function(){}
 
 	},
 

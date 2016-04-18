@@ -5,6 +5,12 @@
   "license": "MIT",
   "dependencies": {
     "socket.io": "~1.4.0",
-    "mysql": "~2.10.2"
-  }
+    "mysql": "~2.10.2",
+    "validator": "~5.2.0",
+    "bcryptjs": "~2.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/cgraamans/sockey.git"
+  }  
 }
