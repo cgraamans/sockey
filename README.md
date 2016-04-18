@@ -44,7 +44,7 @@ Sockey was written to be a quick standalone setup. Therefore there are a number 
 
 [HOWTO](#HOWTO)
 
-[Requirements](#Requirements)
+[Requirements](#requirements)
 
 [Sockey Setup](#Sockey Setup)
 
