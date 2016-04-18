@@ -46,7 +46,7 @@ Sockey was written to be a quick standalone setup. Therefore there are a number 
 
 ## HowTO
 
-[Installation]#installation
+[Installation](#installation)
 
 . [Sockey Setup](#step-1-sockey-setup)
 
