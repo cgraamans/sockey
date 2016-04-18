@@ -119,7 +119,6 @@ module.exports = {
 
 		var persistence = 0;
 
-
 		var token = that.generate();
 		var set = { 
 			tokey:token,

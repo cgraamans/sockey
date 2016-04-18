@@ -2,17 +2,17 @@
 
 ## Lightweight Standalone Nodejs Socket.io MVC Framework
 
-Sockey is a Server-side socket.io framework
+Sockey is a Server-side socket.io framework, specifically made to divorce server-side and client-side processing.
 
 It is an easy-to-use solution for creating quick standalone server-side web socket applications for all your scalable web development needs. 
 
 For those who're unsure what Socket.io is, it's a websocket service. A websocket service is the next step up from AJAX requests; using HTTP calls to keep a connection open between the user's browser and the service, allowing the application to 'push' data to the user when circumstances (on the database or when other users enact actions) change, instead of the user polling for changes from the client regularly. 
 
-Socket.io can be used for web applications, andrioid and iOS application development, allowing you to push data to a user's app.
+Sockey runs on Socket.io, MySQL and bcryptjs.
 
-#### NOTICE: [The original sockey mini-framework is now available as sockey-core here](https://github.com/cgraamans/sockey-core).
+##### NOTICE: [The original sockey mini-framework is now available as sockey-core here](https://github.com/cgraamans/sockey-core).
 
-## MVC
+### MVC
 Sockey attempts to conform to the classic definition of an MVC Framework. MVC stands for Model, View, Controller. To make a well structured application you need all three of those components.
 
 - A **model** creates a connection to the database and manages the data going to and from the database.
@@ -27,6 +27,17 @@ To get Sockey to work _you will need a client application and a server applicati
 
 A sample client webpage is included.
 
+### Sockey includes...
+
+Sockey was written to be a quick standalone setup. Therefore there are a number of functionalities included...
+
+- a clear MVC data structure
+- autoload modules for global scope
+- automatic database connection and disconnection as well as some simple execution functionalities to get you going
+- routing tables to couple requests to controllers
+- a token-based authorization system for user registration, login and token verification
+- examples for everything!
+
 ## Installation
 
 ### Requirements
@@ -34,36 +45,90 @@ A sample client webpage is included.
 Your requirements to install sockey...
   - Knowing what Javascript, NodeJS and Socket.io are.
   - Some kind of Apache Webserver you have root access to.
+  - A MYSQL database, ready to use.
   - NodeJS / NPM:
 
+```bash
     sudo apt-get nodejs npm
+```
 
 ### Step 1: Sockey Setup
     
 Install Sockey from Github.
 
+```bash
     mkdir <some>/<place>/sockey
     cd <some>/<place>/sockey
     git clone https://github.com/cgraamans/sockey.git  
+```
 
+### Step 2: MySQL Setup
 
-Choose your port: Sockey runs on an internal port, unless you decide to reroute it (see step 2).
-    
+Import the MySQL setup from __server/init/mysql__ into your MySQL database like so:
+
+```bash
+    mysql -uroot -p yourdatabasename < server/init/mysql/sockeydb.sql
+```
+Make a user to go along with that as well.
+
+### Step 3: Options Setup
+
+To get the application running, you will need to set up your options:
+
+```bash
     cd <some>/<place>/sockey/server
     npm install
     vim lib/options.js
+```
+Run through the following checklist to make sure you've gotten everything covered.
 
-### Step 2: Apache Setup
+##### 1] Set up your desired port. Sockey runs on an internal port, which you can either route through your firewall or route through an Apache service on port 80.
+##### 2] Set up your to-be-autoloaded modules (async comes to mind...)
 
-You will have to create an internal proxy to link the apache webhost to Sockey.
+First, get the npm module you want to make available globally...
 
+```bash
+    npm install --save async
+
+Then include it in the options like so... 
+
+```javascript
+    modules: {
+        autoload:[
+            {
+              name:'async', // the module as named in node_modules
+              mod:'async', // the module as you want to access it in sockey.opt.modules.obj
+            },
+        ], // Add nodejs modules which need to be loaded into the sockey object. This makes the module available globally.
+        obj:{}
+    },
+```
+
+The module will be automatically loaded and available in the sockey.opt.modules.obj object in any controller (See Usage for more info)
+
+##### 3] Modify the database settings to include your database credentials (database username, password, name and host).
+
+##### 4] Set up the error and ok-result return suffixes in the __socket__ object.
+
+##### 5] (OPTIONAL) Run through the settings of the auth module to make sure you don't miss out on anything you want to alter.
+
+Save and continue...
+
+### Step 4 (optional): Apache Setup
+
+You will have to create an internal proxy to link the apache webhost to Sockey. __Sockey runs on an internal port, which you chose in the above options.__ 
+
+- Firstly, make sure you've got the following modules installed in your apache service.
+
+```bash
     sudo a2enmod rewrite
     sudo a2enmod proxy_http
     sudo a2enmod proxy_wstunnel
     sudo service apache2 restart
+```
+- Paste the following into your relevant apache VirtualHost directive. Change the port numbers (highlighted below) to the port you chose installing Sockey.
 
-Paste the following into your relevant apache VirtualHost directive. Change the port numbers (highlighted below) to the port you chose installing Sockey.
-
+```bash
     RewriteEngine On
     RewriteCond %{REQUEST_URI}  ^/socket.io            [NC]
     RewriteCond %{QUERY_STRING} transport=websocket    [NC]
@@ -71,39 +136,51 @@ Paste the following into your relevant apache VirtualHost directive. Change the 
 
     ProxyPass        /socket.io http://localhost:8081/socket.io
     ProxyPassReverse /socket.io http://localhost:8081/socket.io
+```
+_NOTE:_ There is an example for you in the _init/apache2_ directory you can use in a pinch.
 
-_Note:_ There is an example for you in the _init/apache2_ directory you can use in a pinch.
-
-### Step 3 (optional): Upstart Setup
+### Step 5 (optional): Upstart Setup
 
 If your server supports upstart, you can use the template in the _init/upstart_ directory to have the process start up automatically after every system restart.
 
-### Step 4 (optional): Test client Setup
+### Step 6 (optional): Test client Setup
 
 If you quickly want to test the client functionality, there is a sliver of a client in the client directory for you to use. Also do the following to ensure you have socket.io installed for the client:
 
-    cd <some>/<place>/sockey/client
-    npm install
+```bash
+cd <some>/<place>/sockey/client
+npm install
+```
+
+Make a separate apache host pointing to the directory.
 
 ## Usage
 
 ### Step 1: Create a route
 
-First, edit your routes file.
+First, edit your routes file. Then, change the example route or add a new object to the routes array.
 
     vim lib/routes.js
 
-Then, change the example route or add a new object to the routes array.
+```javascript
+{
+    sock:'example',
+    controller:'example'
+},
+```
+
+_NOTE:_ Do not remove the auth designation if you intend to use the authorization module. If you're looking for sockey without an auth module there is the separate [sockey-core project]()
 
 ### Step 2: Create a controller
 
-    touch controllers/test.js
-    vim controllers/test.js
+```bash
+vim controllers/test.js
+```
 
 Add the following code to your test.js controller file:
 
 ```javascript
-exports = module.exports = function(io,socket,opt,sock,callback) {
+exports = module.exports = function(sockey,run,sock,callback) {
 
     return function(data) {
         var dataCallback = {timers:[],intervals:[]};
@@ -123,22 +200,54 @@ exports = module.exports = function(io,socket,opt,sock,callback) {
 };
 ```
 
-#### Example socket emit in a controller function:
+_NOTE:_ The data callback is to kill off any timer or interval processes you want to start in the controller. Allowing these to keep running after client disconnection will create an incredible memory leak. Make sure you always add a timer or an interval to the dataCallback object (see below).
+
+#### Objects and their functions
+
+Sockey uses an object/function design model, where function are extensions of objects loaded asynchronously. Here's a list of global and local objects and their included functions.
+
+##### GLOBAL
+
+- sockey.opt: Import from lib/options.js
+- sockey.opt.modules.obj: Auto-loaded modules
+- sockey.io: initialized socket.io engine
+- sockey.db: Database connectivity and management functionalities
+- sockey.token: Token generation and checking functionalities
+- sockey.modules: Globally loaded modules
+
+##### SOCKET-LEVEL
+
+- run.db: the initialized database connection
+- run.socket: the initialized socket in the controller.
+
+#### Examples
+
+Below are some code examples for best practice within the framework.
+
+##### Including a model
+
+In your controller you can initialize the model thusly:
 
 ```javascript
-socket.emit(sock+opt.socket.data,{
+var testmodel = require('../models/test-model');
+```
+
+##### Example socket emit in a controller function:
+
+```javascript
+run.socket.emit(sock+sockey.opt.socket.data,{
     "message":"Recieved Example Request",
     "request-socket":sock,
 });
 ```
 
-#### Example for timers and intervals in a controller function:
+##### Example for timers and intervals in a controller function:
 
 ```javascript
 // INTERVALS: This is how you do Intervals
 var interval = setInterval(function(){
 
-    socket.broadcast.emit(sock+opt.socket.data,{
+    run.socket.broadcast.emit(sock+opt.socket.data,{
         "message":"Global Timed Emit To Everyone But User Every 5 seconds"
     });
 
@@ -148,7 +257,7 @@ dataCallback.intervals.push(interval);
 // TIMEOUTS: This is how you do Timeouts
 var timeout = setTimeout(function(){
 
-    io.emit(sock+opt.socket.data,{"message":"Global Emit To Everyone After 10 seconds"});
+    sockey.io.emit(sock+opt.socket.data,{"message":"Global Emit To Everyone After 10 seconds"});
 
 },10000);
 dataCallback.timers.push(timeout);
@@ -158,18 +267,55 @@ For more information on how sockets work and how to use them, see the [socket.io
 
 ### Step 3 (optional): Create your models
 
+Below are some examples for creating database connections. [See felixge's brilliant MySQL module](https://github.com/felixge/node-mysql)'s readme for more info. To use these properly, create models for your functions. Include them thusly...
+
 Models are always objects in Sockey. Create your model like so:
 
-    touch models/test-model.js
-    vim models/test-model.js
-
+```bash
+vim models/test-model.js
+```
 Then add the following to the test-model.js model file:
 
 ```javascript
-exports = {};
+module.exports = {};
 ```
 
-Fill the object with your required models (functions and variables for database connection and interaction).
+Fill the object with your required models (functions and variables for database connection and interaction). To optimally take advantage of the sockey framework pass the sockey and the run variables in the function
+
+```javascript
+function(sockey,run,data,callback) {}
+```
+
+Example template for a module:
+
+```javascript
+module.exports = {
+    
+    login: function(sockey,run,user,callback) {
+
+        var rtn = {
+            ok:false,
+            err:false,
+            res:false,
+        };
+
+        run.db.query('SELECT... WHERE a = ? AND b = ? AND c = ?',[a,b,c],function(err,result){
+        
+            if (err) {
+                rtn.err = err;
+            } else {
+
+                rtn.ok = true;
+                rtn.res = result;
+            }
+            callback(rtn);
+
+        });
+
+    },
+
+};
+```
 
 In your controller you can initialize the model thusly:
 
@@ -177,6 +323,38 @@ In your controller you can initialize the model thusly:
 var testmodel = require('../models/test-model');
 ```
 
-### Step 4 (optional): Adding globally required libraries
+Note that these are asynchronous and need to be used within an aysnc call if you wish to use them in sequence or in parallel.
 
-...TBD... 
+##### Example database SELECT
+
+```javascript
+run.db.query('SELECT... WHERE a = ? AND b = ? AND c = ?',[a,b,c],function(err,result){
+    
+});
+```
+
+##### Example database INSERT / DELETE
+
+
+##### Example database UPDATE
+
+```javascript
+var set = { 
+  insdate:(Math.floor(Date.now() / 1000)),
+};
+run.db.query('UPDATE table SET ? WHERE ?',[set,{user_id: user.id,}],function(err,result) {
+  if (err) {
+    
+    ...
+  
+  } else {
+    
+    ...
+
+  }
+
+});
+```
+
+### Step 4 (optional): User Registration, Login and Token authorization.
+

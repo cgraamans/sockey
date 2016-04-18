@@ -3,6 +3,7 @@ var sockey = require('./lib/sockey');
 	sockey.opt = require('./lib/options'),
 	sockey.io = require('socket.io')(sockey.opt.port),
 	sockey.token = require('./lib/sockey.token'),
+	sockey.modules = {},
 	routes = require('./lib/routes'),
 	timers = intervals = [];
 
