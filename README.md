@@ -38,7 +38,27 @@ Sockey was written to be a quick standalone setup. Therefore there are a number 
 - a token-based authorization system for user registration, login and token verification
 - examples for everything!
 
+### Sockey uses the following third party modules...
+
+- Socket.io
+- FelixGe's MYSQL
+- bcryptjs
+
 ## HowTO
+
+[Installation]#installation
+
+. [Sockey Setup](#step-1-sockey-setup)
+
+. [MySQL Setup](#step-2-mysql-setup)
+
+. [Options Setup](#step-3-options-setup)
+
+. [Apache Setup](#step-4-optional-apache-setup)
+
+. [Upstart Setup](#step-5-optional-upstart-setup)
+
+. [Test Client Setup](#step-6-optional-test-client-setup)
 
 [Usage](#usage)
 
