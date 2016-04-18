@@ -1,6 +1,6 @@
-# Sockey
+# ![alt text](https://raw.githubusercontent.com/cgraamans/sockey/master/client/img/logo.png "Sockey!") Sockey!
 
-## Lightweight Standalone Nodejs Socket.io MVC Framework
+## Easy and Lightweight Standalone Nodejs Socket.io MVC Framework
 
 Sockey is a Server-side socket.io framework, specifically made to divorce server-side and client-side processing.
 
@@ -154,7 +154,7 @@ modules: [
         },
 
         ...
-        
+
 ],
 
 ```
