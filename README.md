@@ -38,7 +38,23 @@ Sockey was written to be a quick standalone setup. Therefore there are a number 
 - a token-based authorization system for user registration, login and token verification
 - examples for everything!
 
-## Installation
+
+
+## HOWTO
+
+[Installation]()
+  [Requirements]()
+  [Sockey Setup]()
+  [MySQL Setup]()
+  [Options Setup]()
+  [Apache Setup]()
+  [Upstart Setup]()
+  [Test Client]()
+[Usage]()
+  [Routing]()
+  [Controllers]()
+  [Models]()
+
 
 ### Requirements
 
@@ -82,8 +98,8 @@ To get the application running, you will need to set up your options:
 ```
 Run through the following checklist to make sure you've gotten everything covered.
 
-##### 1] Set up your desired port. Sockey runs on an internal port, which you can either route through your firewall or route through an Apache service on port 80.
-##### 2] Set up your to-be-autoloaded modules (async comes to mind...)
+##### 1. Set up your desired port. Sockey runs on an internal port, which you can either route through your firewall or route through an Apache service on port 80.
+##### 2. Set up your to-be-autoloaded modules (async comes to mind...)
 
 First, get the npm module you want to make available globally...
 
@@ -106,11 +122,11 @@ Then include it in the options like so...
 
 The module will be automatically loaded and available in the sockey.opt.modules.obj object in any controller (See Usage for more info)
 
-##### 3] Modify the database settings to include your database credentials (database username, password, name and host).
+##### 3. Modify the database settings to include your database credentials (database username, password, name and host).
 
-##### 4] Set up the error and ok-result return suffixes in the __socket__ object.
+##### 4. Set up the error and ok-result return suffixes in the __socket__ object.
 
-##### 5] (OPTIONAL) Run through the settings of the auth module to make sure you don't miss out on anything you want to alter.
+##### 5. (OPTIONAL) Run through the settings of the auth module to make sure you don't miss out on anything you want to alter.
 
 Save and continue...
 
