@@ -1,4 +1,7 @@
 # Sockey
+
+## Lightweight Standalone Nodejs Socket.io MVC Framework
+
 Sockey is a Server-side socket.io framework
 
 It is an easy-to-use solution for creating quick standalone server-side web socket applications for all your scalable web development needs. 
