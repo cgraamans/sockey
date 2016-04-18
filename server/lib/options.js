@@ -3,14 +3,12 @@ module.exports = {
 	// User settings
 	port: 8081, // Set your port here,
 
-	modules: {
-		autoload:[
+	modules: [
 			// {
 			// 	name:'async', // the module as named in node_modules
 			// 	mod:'async', // the module as you want to access it in sockey.opt.modules.obj
 			// },
-		], // Add nodejs modules which need to be loaded into the sockey object. This makes the module available globally.
-	},
+	], // Add nodejs modules which need to be loaded into the sockey object. This makes the module available globally.
 
 	// Database settings
 	db:{

@@ -7,9 +7,9 @@ var sockey = require('./lib/sockey');
 	routes = require('./lib/routes'),
 	timers = intervals = [];
 
-sockey.opt.modules.autoload.forEach(function(load) {
+sockey.opt.modules.forEach(function(load) {
 
-	sockey.opt.modules.obj[load.name] = require(load.mod);
+	sockey.modules[load.name] = require(load.mod);
 
 });
 

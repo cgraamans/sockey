@@ -40,9 +40,11 @@ Sockey was written to be a quick standalone setup. Therefore there are a number 
 
 ### Sockey uses the following third party modules...
 
-- Socket.io
-- FelixGe's MYSQL
-- bcryptjs
+- [Socket.io](http://socket.io)
+- [FelixGe's MYSQL](https://github.com/felixge/node-mysql)
+- [bcryptjs](https://github.com/dcodeIO/bcrypt.js)
+
+Many thanks to those folks for their contributions to programming.
 
 ## HowTO
 
@@ -137,19 +139,24 @@ First, get the npm module you want to make available globally...
 
 ```bash
     npm install --save async
+```
 
-Then include it in the options like so... 
+Then include it in the options like so ([example uses async](https://github.com/caolan/async)) ... 
 
 ```javascript
-    modules: {
-        autoload:[
-            {
-              name:'async', // the module as named in node_modules
-              mod:'async', // the module as you want to access it in sockey.opt.modules.obj
-            },
-        ], // Add nodejs modules which need to be loaded into the sockey object. This makes the module available globally.
-        obj:{}
-    },
+modules: [
+
+        ...
+
+        {
+          name:'async', // the module as named in node_modules
+          mod:'async', // the module as you want to access it in sockey.opt.modules.obj
+        },
+
+        ...
+        
+],
+
 ```
 
 The module will be automatically loaded and available in the sockey.opt.modules.obj object in any controller (See Usage for more info)
@@ -206,9 +213,13 @@ Make a separate apache host pointing to the directory.
 
 ### Step 1: Create a route
 
-First, edit your routes file. Then, change the example route or add a new object to the routes array.
+First, edit your routes file.
 
+```bash
     vim lib/routes.js
+```
+
+Then, change the example route or add a new object to the routes array.
 
 ```javascript
 {
@@ -217,7 +228,9 @@ First, edit your routes file. Then, change the example route or add a new object
 },
 ```
 
-_NOTE:_ Do not remove the auth designation if you intend to use the authorization module. If you're looking for sockey without an auth module there is the separate [sockey-core project]()
+In this context sock is the incomming socket designation (string), the controller is the path to the controller's file relative to the controller directory.
+
+_NOTE:_ Do not remove the auth designation if you intend to use the authorization module. If you're looking for sockey without an auth module there is the separate [sockey-core project](https://github.com/cgraamans/sockey-core)
 
 ### Step 2: Create a controller
 
@@ -256,12 +269,12 @@ Sockey uses an object/function design model, where function are extensions of ob
 
 ##### GLOBAL
 
-- sockey.opt: Import from lib/options.js
-- sockey.opt.modules.obj: Auto-loaded modules
-- sockey.io: initialized socket.io engine
-- sockey.db: Database connectivity and management functionalities
-- sockey.token: Token generation and checking functionalities
-- sockey.modules: Globally loaded modules
+- __sockey.opt__: Import from lib/options.js
+- __sockey.modules__: Auto-loaded modules
+- __sockey.io__: initialized socket.io engine
+- __sockey.db__: Database connectivity and management functionalities
+- __sockey.token__: Token generation and checking functionalities
+- __sockey.modules__: Globally loaded modules
 
 ##### SOCKET-LEVEL
 
