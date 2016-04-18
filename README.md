@@ -42,18 +42,25 @@ Sockey was written to be a quick standalone setup. Therefore there are a number 
 
 ## HOWTO
 
-[Installation]()
-  [Requirements]()
-  [Sockey Setup]()
-  [MySQL Setup]()
-  [Options Setup]()
-  [Apache Setup]()
-  [Upstart Setup]()
-  [Test Client]()
-[Usage]()
-  [Routing]()
-  [Controllers]()
-  [Models]()
+    [HOWTO](#HOWTO)
+      [Requirements](#Requirements)
+      [Sockey Setup](#Sockey Setup)
+      [MySQL Setup](#MySQL Setup)
+      [Options Setup](#Options Setup)
+      [Apache Setup](#Apache Setup)
+      [Upstart Setup](#Upstart Setup)
+      [Test Client](#Test Client)
+    [Usage](#Usage)
+      [Routing](#Routing)
+      [Controllers](#Controllers)
+        [Objects and their functions](#Objects and their functions)
+          [GLOBAL](#GLOBAL)
+          [SOCKET-LEVEL](#SOCKET-LEVEL)
+        [Examples](#Examples)
+          [Including a model](#Including a model)
+          [Socket emit in a controller function](#Socket emit in a controller function)
+          [Timers and intervals in a controller function](#Timers and intervals in a controller function)
+      [Models]()
 
 
 ### Requirements
@@ -248,7 +255,7 @@ In your controller you can initialize the model thusly:
 var testmodel = require('../models/test-model');
 ```
 
-##### Example socket emit in a controller function:
+##### Socket emit in a controller function
 
 ```javascript
 run.socket.emit(sock+sockey.opt.socket.data,{
@@ -257,7 +264,7 @@ run.socket.emit(sock+sockey.opt.socket.data,{
 });
 ```
 
-##### Example for timers and intervals in a controller function:
+##### Timers and intervals in a controller function
 
 ```javascript
 // INTERVALS: This is how you do Intervals
