@@ -38,6 +38,33 @@ Sockey was written to be a quick standalone setup. Therefore there are a number 
 - a token-based authorization system for user registration, login and token verification
 - examples for everything!
 
+## HowTO
+
+[Usage](#usage)
+
+. [Create a Route](#step-1-create-a-route)
+
+. [Create a Controller](#step-2-create-a-controller)
+
+. . [Sockey functions](#sockey-functions)
+
+. . [Examples](#examples)
+
+. . . [Including a Model](#including-a-model)
+
+. . . [Socket emit in a controller function](#socket-emit-in-a-controller-function)
+
+. . . [Timers and Intervals in a controller function](#timers-and-intervals-in-a-controller-function)
+
+. [Create your Models](#step-3-optional-create-your-models)
+
+. . [Database SELECT](#example-database-select)
+
+. . [Database INSERT/DELETE](#example-database-insert--delete)
+
+. . [Database UPDATE](#example-database-update)
+
+. [(OPTIONAL) USER REGISTRATION/LOGIN AND TOKEN AUTHORIZATION](#step-4-optional-user-registration-login-and-token-authorization)
 
 ## Installation
 
@@ -156,6 +183,30 @@ npm install
 Make a separate apache host pointing to the directory.
 
 ## Usage
+
+(#step-1-create-a-route)
+
+(#step-2-create-a-controller)
+
+(#objects-and-their-functions)
+
+(#examples)
+
+(#including-a-model)
+
+(#socket-emit-in-a-controller-function)
+
+(#timers-and-intervals-in-a-controller-function)
+
+(#step-3-optional-create-your-models)
+
+(#example-database-select)
+
+(#example-database-insert--delete)
+
+(#example-database-update)
+
+(#step-4-optional-user-registration-login-and-token-authorization)
 
 ### Step 1: Create a route
 
