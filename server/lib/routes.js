@@ -4,7 +4,7 @@ module.exports = {
 		
 		{
 			sock:'auth',
-			controller:'auth',
+			controller:'_auth',
 		},
 		
 		{

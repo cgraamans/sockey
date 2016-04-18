@@ -14,13 +14,16 @@ sockey.opt.modules.autoload.forEach(function(load) {
 
 sockey.io.on('connection', function(socket) {
 
-	sockey.db.connect(sockey.opt.db);
+	var run = {};
 
+	run.db = sockey.db.connect(sockey.opt.db);
+	run.socket = socket;
+	
 	routes.route.forEach(function(route) {
 
 		socket.on(route.sock,function(data) {
 
-			require(sockey.opt.ctrls+route.controller)(sockey,socket,route.sock,function(times){
+			require(sockey.opt.ctrls+route.controller)(sockey,run,route.sock,function(times){
 
 				if (typeof times !== 'undefined') {
 
@@ -60,7 +63,7 @@ sockey.io.on('connection', function(socket) {
 			clearTimeout(iv);
 		});
 
-		sockey.db.disconnect();
+		run.db.end();
 
 	});
 

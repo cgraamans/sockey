@@ -1,6 +1,6 @@
 module.exports = {
 
-	login: function(sockey,user,callback) {
+	login: function(sockey,run,user,callback) {
 
 		var rtn = {
 			ok:false,
@@ -8,7 +8,7 @@ module.exports = {
 			res:false,
 		};
 
-		sockey.db.get("SELECT id, password FROM users WHERE name = ?",user.name,function(a){
+		sockey.db.exec("SELECT id, password FROM users WHERE name = ?",user.name,run,function(a){
 
 			if (a.ok === false) {
 
@@ -23,7 +23,7 @@ module.exports = {
 						if (bcrypt.compareSync(user.password,a.res[0].password) === true) {
 
 							user.id = a.res[0].id;
-							sockey.token.update(sockey,user,function(arr){
+							sockey.token.update(sockey,run,user,function(arr){
 
 								if (arr.ok === true) {
 
@@ -61,7 +61,7 @@ module.exports = {
 
 	},
 
-	register: function(sockey,user,callback) {
+	register: function(sockey,run,user,callback) {
 
 		var rtn = {
 			ok:false,
@@ -69,7 +69,7 @@ module.exports = {
 			res:false,
 		};
 
-		sockey.db.get("SELECT id FROM users WHERE name = ?",user.name,function(a){
+		sockey.db.exec("SELECT id FROM users WHERE name = ?",user.name,run,function(a){
 
 			if (a.ok === true) {
 				
@@ -95,12 +95,12 @@ module.exports = {
 
 					}
 
-					sockey.db.connection.query("INSERT INTO users SET ?",ins,function(c,b) {
+					run.db.query("INSERT INTO users SET ?",ins,function(c,b) {
 						
 						if (c == null) {
 
 							var token = sockey.token.generate();
-							sockey.db.connection.query('INSERT INTO user_keys SET ?', {
+							run.db.query('INSERT INTO user_keys SET ?', {
 								user_id:b.insertId,
 								tokey: token,
 								insdate:(Math.floor(Date.now() / 1000)), 

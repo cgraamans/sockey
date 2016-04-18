@@ -21,13 +21,43 @@
 			}
 			#top {
 				width:calc( 100% - 10px );
-				height:70px;
-				background-color:#000;
-				color:#FFF;
+				height:100px;
+				background-color:#CCC;
+				color:#000;
 				padding-left:10px;
-				-webkit-box-shadow:0px 1px 1px #000;
-				-moz-box-shadow:0px 1px 1px #000;
-				box-shadow:0px 1px 1px #000;
+				-webkit-box-shadow:0px 10px 10px #AAA;
+				-moz-box-shadow:0px 10px 10px #AAA;
+				box-shadow:0px 10px 10px #AAA;
+			}
+
+			#top img.logo {
+				float:left;
+				height:100%;
+			}
+
+			#top img.github {
+				height:50%;
+			}
+
+			#top h1 {
+				margin:0;
+				padding:0;
+				padding-left:15px;
+				padding-top:30px;
+				color:#0d2636;
+				width:50%;
+				float:left;
+
+			}
+			#top a.github {
+				float:right;
+				margin-right:20px;
+				margin-top:20px;
+
+			}
+
+			#top a.github img {
+				height:40%;
 			}
 			#middle {
 				margin-top:10px;
@@ -46,8 +76,9 @@
 	</head>
 	<body>
 		<div id="top">
-
+			<img src="/img/logo.png" title="Sockey!" class="logo">
 			<h1>Sockey Example Page</h1>
+			<a href="https://github.com/cgraamans/sockey" class="github"><img src="/img/github.png" title="Sockey on GitHub"></a>
 
 		</div>
 		<div id="middle">
@@ -142,6 +173,8 @@
 				socket.emit('auth',pass);
 
 			});
+
+			console.log(socket);
 
 			socket.on('example_data',function(d){
 

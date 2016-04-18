@@ -1,4 +1,9 @@
-exports = module.exports = function(sockey,socket,sock,callback) {
+/**
+	Example Token Check. 
+
+	Note, this is asynchronous. Use the async module to use this in a synchronous context.
+*/
+exports = module.exports = function(sockey,run,sock,callback) {
 
 
 	return function(data) {
@@ -15,7 +20,7 @@ exports = module.exports = function(sockey,socket,sock,callback) {
 			if (typeof data.user === 'undefined') {
 
 				emit.err = 'User data not passed.'
-				socket.emit(sock+sockey.opt.socket.error,emit);
+				run.socket.emit(sock+sockey.opt.socket.error,emit);
 				callback(dataCallback);
 
 			} else {
@@ -23,7 +28,7 @@ exports = module.exports = function(sockey,socket,sock,callback) {
 				if (typeof data.user.key === 'undefined') {
 
 					emit.err = 'User key not passed.';
-					socket.emit(sock+sockey.opt.socket.error,emit);
+					run.socket.emit(sock+sockey.opt.socket.error,emit);
 					callback(dataCallback);
 
 				} else {
@@ -31,22 +36,21 @@ exports = module.exports = function(sockey,socket,sock,callback) {
 					if (typeof data.user.name === 'undefined') {
 
 						emit.err = 'User name not passed.';
-						socket.emit(sock+sockey.opt.socket.error,emit);
+						run.socket.emit(sock+sockey.opt.socket.error,emit);
 						callback(dataCallback);
 
 					} else {
 
-						/**
-							Example Token Check. Note, this is asynchronous. Use the async module to use this in a synchronous context.
-						*/
-						sockey.token.check(sockey,socket,data.user,function(u){
+						sockey.token.check(sockey,run,data.user,function(u){
 
 
 							var usedSocket;
 							if (u.ok === true) {
 
-								// Your Code here
-								// Note: u.res is user's id
+								//
+								// Your Code Goes Here
+								//
+								// Note: u.res is returned as the user's id in this case. Use it wisely for your database queries.
 
 								usedSocket = sock+sockey.opt.socket.data;
 								emit.ok = true;
@@ -54,13 +58,11 @@ exports = module.exports = function(sockey,socket,sock,callback) {
 
 							} else {
 
-								// Your Code here
-
 								usedSocket = sock+sockey.opt.socket.error;
 								emit.err = u.err;
 
 							}
-							socket.emit(usedSocket,emit);
+							run.socket.emit(usedSocket,emit);
 							callback(dataCallback);
 
 						});

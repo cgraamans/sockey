@@ -1,13 +1,13 @@
-exports = module.exports = function(sockey,socket,sock,callback) {
+exports = module.exports = function(sockey,run,sock,callback) {
 
-	var run = {
+	var local = {
 
 		emitters: {},
 		modules: {},
-		registration: function(sockey,data,emit,cb) {
+		registration: function(sockey,run,data,emit,cb) {
 
 			var that = this;
-			this.modules.auths.register(sockey,data.user,function(r) {
+			this.modules.auths.register(sockey,run,data.user,function(r) {
 
 				if (r.ok === true) {
 
@@ -26,10 +26,10 @@ exports = module.exports = function(sockey,socket,sock,callback) {
 
 		},
 
-		login: function(sockey,data,emit,cb) {
+		login: function(sockey,run,data,emit,cb) {
 
 			var that = this;
-			this.modules.auths.login(sockey,data.user,function(l){
+			this.modules.auths.login(sockey,run,data.user,function(l){
 
 				if (l.ok === true) {
 
@@ -64,8 +64,8 @@ exports = module.exports = function(sockey,socket,sock,callback) {
 				err:false,
 			};
 
-			run.emitters.error = sock+sockey.opt.socket.error;
-			run.emitters.data = sock+sockey.opt.socket.data;
+			local.emitters.error = sock+sockey.opt.socket.error;
+			local.emitters.data = sock+sockey.opt.socket.data;
 
 			if (typeof data !== 'object') {
 
@@ -101,7 +101,7 @@ exports = module.exports = function(sockey,socket,sock,callback) {
 
 			if (emit.err === false) {
 
-				run.modules.auths = require('../models/auths');
+				local.modules.auths = require('../models/auths');
 				if (data.type === 'register') {
 
 					var validator = require('validator');
@@ -119,15 +119,15 @@ exports = module.exports = function(sockey,socket,sock,callback) {
 
 											if (validator.isEmail(data.user.email) === true) {
 
-												run.registration(sockey,data,emit,function(reg) {
+												local.registration(sockey,run,data,emit,function(reg) {
 
-													var emitter = run.emitters.error;
+													var emitter = local.emitters.error;
 													if (reg.ok === true ) {
 
-														emitter = run.emitters.data;
+														emitter = local.emitters.data;
 													
 													}
-													socket.emit(emitter,reg);
+													run.socket.emit(emitter,reg);
 													callback(dataCallback);
 
 												});
@@ -135,7 +135,7 @@ exports = module.exports = function(sockey,socket,sock,callback) {
 											} else {
 
 												emit.err = 'Email address is invalid.';
-												socket.emit(run.emitters.error,emit);
+												run.socket.emit(run.emitters.error,emit);
 												callback(dataCallback);
 
 											}
@@ -143,7 +143,7 @@ exports = module.exports = function(sockey,socket,sock,callback) {
 										} else {
 
 											emit.err = 'Email address needed.';
-											socket.emit(run.emitters.error,emit);
+											run.socket.emit(run.emitters.error,emit);
 											callback(dataCallback);
 
 										}
@@ -151,15 +151,15 @@ exports = module.exports = function(sockey,socket,sock,callback) {
 									} else {
 
 										data.user.email = null;
-										run.registration(sockey,data,emit,function(reg){
+										local.registration(sockey,data,emit,function(reg){
 
-											var emitter = run.emitters.error;
+											var emitter = local.emitters.error;
 											if (reg.ok === true) {
 
-												emitter = run.emitters.data;
+												emitter = local.emitters.data;
 											
 											}
-											socket.emit(emitter,reg);
+											run.socket.emit(emitter,reg);
 											callback(dataCallback);
 
 										});
@@ -168,7 +168,7 @@ exports = module.exports = function(sockey,socket,sock,callback) {
 								} else {
 
 									emit.err = 'Password must contain letters and at least one special character and one number.';
-									socket.emit(run.emitters.error,emit);
+									run.socket.emit(run.emitters.error,emit);
 									callback(dataCallback);
 
 								}
@@ -176,7 +176,7 @@ exports = module.exports = function(sockey,socket,sock,callback) {
 							} else {
 
 								emit.err = 'Password must be between 6 and 60 characters long.';
-								socket.emit(run.emitters.error,emit);
+								run.socket.emit(run.emitters.error,emit);
 								callback(dataCallback);
 
 							}							
@@ -184,7 +184,7 @@ exports = module.exports = function(sockey,socket,sock,callback) {
 						} else {
 
 							emit.err = 'Usernames may contain letters, special characters and numbers.';
-							socket.emit(run.emitters.error,emit);
+							run.socket.emit(run.emitters.error,emit);
 							callback(dataCallback);
 
 						}
@@ -192,7 +192,7 @@ exports = module.exports = function(sockey,socket,sock,callback) {
 					} else {
 
 						emit.err = 'User name must be between 3 and 32 Characters..';
-						socket.emit(run.emitters.error,emit);
+						run.socket.emit(run.emitters.error,emit);
 						callback(dataCallback);
 
 					}
@@ -201,15 +201,15 @@ exports = module.exports = function(sockey,socket,sock,callback) {
 
 				if (data.type === 'login') {
 
-					run.login(sockey,data,emit,function(li){
+					local.login(sockey,run,data,emit,function(li){
 
-						var emitter = run.emitters.error;
+						var emitter = local.emitters.error;
 						if (li.ok === true) {
 
-							emitter = run.emitters.data;
+							emitter = local.emitters.data;
 
 						}
-						socket.emit(emitter,li);
+						run.socket.emit(emitter,li);
 						callback(dataCallback);
 
 					});
@@ -218,7 +218,7 @@ exports = module.exports = function(sockey,socket,sock,callback) {
 
 			} else {
 
-				socket.emit(run.emitters.error,emit);
+				run.socket.emit(run.emitters.error,emit);
 				callback(dataCallback);
 
 			}

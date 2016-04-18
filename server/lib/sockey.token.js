@@ -7,7 +7,7 @@ module.exports = {
 
 	},
 
-	check: function(sockey,socket,user,callback) {
+	check: function(sockey,run,user,callback) {
 
 		var that = this;
 
@@ -27,7 +27,7 @@ module.exports = {
 					timeout:4000,
 				};
 
-				sockey.db.connection.query(keycheck, function (error, results) {
+				run.db.query(keycheck, function (error, results) {
 
 					if (error === null) {
 
@@ -43,14 +43,14 @@ module.exports = {
 								} else {
 
 									user.id = results[0].id;
-									that.update(sockey,user,function(ree) {
+									that.update(sockey,run,user,function(ree) {
 
 										if (ree.ok === true) {
 
 											rtn.ok = true;
 											rtn.res = results[0].id;
 
-											socket.emit(sockey.opt.auth.socket+sockey.opt.socket.data,{
+											run.socket.emit(sockey.opt.auth.socket+sockey.opt.socket.data,{
 												ok:true,
 												res:ree.res,
 												err:false,
@@ -107,7 +107,7 @@ module.exports = {
 
 	},
 
-	update: function(sockey,user,callback) {
+	update: function(sockey,run,user,callback) {
 
 		var that = this;
 
@@ -140,7 +140,7 @@ module.exports = {
 
 		}
 
-		sockey.db.connection.query('UPDATE user_keys SET ? WHERE ?',[set,{user_id: user.id,}],function(err,result) {
+		run.db.query('UPDATE user_keys SET ? WHERE ?',[set,{user_id: user.id,}],function(err,result) {
 
 			if (err) {
 
