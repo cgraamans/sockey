@@ -3,18 +3,13 @@ module.exports = {
 	route: [
 		
 		{
-			sock:'auth',
-			controller:'_auth',
-		},
-		
-		{
 			sock:'example',
-			controller:'example'
+			controller:'./controllers/example'
 		},
 
 		{
 			sock:'keytest',
-			controller:'example-keytest',
+			controller:'./controllers/example-keytest',
 		},
 
 	]

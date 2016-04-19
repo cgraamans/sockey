@@ -2,14 +2,34 @@
 var sockey = require('./lib/sockey');
 	sockey.opt = require('./lib/options'),
 	sockey.io = require('socket.io')(sockey.opt.port),
-	sockey.token = require('./lib/sockey.token'),
 	sockey.modules = {},
 	routes = require('./lib/routes'),
-	timers = intervals = [];
+	timers = intervals = [],
+	sockey.helpers = {};
 
+// Global NodeJS Modules
 sockey.opt.modules.forEach(function(load) {
 
 	sockey.modules[load.name] = require(load.mod);
+
+});
+
+// Global Sockey Helpers
+sockey.opt.helpers.forEach(function(helper){
+
+	if (!(helper in sockey)) {
+
+		sockey[helper] = require('./helpers/sockey.'+helper);
+
+	}
+
+});
+
+// For authorizations, you will need a separate route to the sockey.token.auth library 
+routes.route.push({
+
+	controller:'./helpers/sockey.token.auth',
+	sock:sockey.opt.auth.socket,
 
 });
 
@@ -19,12 +39,14 @@ sockey.io.on('connection', function(socket) {
 
 	run.db = sockey.db.connect(sockey.opt.db);
 	run.socket = socket;
-	
+
+
+	// User Routes
 	routes.route.forEach(function(route) {
 
 		socket.on(route.sock,function(data) {
 
-			require(sockey.opt.ctrls+route.controller)(sockey,run,route.sock,function(times){
+			require(route.controller)(sockey,run,route.sock,function(times){
 
 				if (typeof times !== 'undefined') {
 
