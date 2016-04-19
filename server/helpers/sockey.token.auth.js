@@ -2,23 +2,62 @@ exports = module.exports = function(sockey,run,sock,callback) {
 
 	var local = {
 
-		emitters: {},
-		modules: {},
-		registration: function(sockey,run,data,emit,cb) {
+		emitters:{},
 
-			var that = this;
-			this.modules.auths.register(sockey,run,data.user,function(r) {
+		login: function(sockey,run,user,callback) {
 
-				if (r.ok === true) {
+			var rtn = {
+				ok:false,
+				err:false,
+				res:false,
+			};
 
-					emit.ok = true,
-					emit.res = r.res;
-					cb(emit);
+			sockey.db.exec("SELECT id, password FROM users WHERE name = ?",user.name,run,function(a){
+
+				if (a.ok === false) {
+
+					rtn.err = 'Password query failed.';
+					callback(rtn);
 
 				} else {
 
-					emit.err = r.err;
-					cb(emit);
+					if (a.res.length == 1) {
+
+							var bcrypt = require('bcryptjs');
+							if (bcrypt.compareSync(user.password,a.res[0].password) === true) {
+
+								user.id = a.res[0].id;
+								sockey.token.update(sockey,run,user,function(arr){
+
+									if (arr.ok === true) {
+
+										rtn.ok = true;
+										rtn.res = arr.res;
+
+									} else {
+
+										rtn.err = 'User not found.';
+
+									}
+									callback(rtn);
+
+								});
+
+
+							} else {
+
+								rtn.err = 'User not found.';
+								callback(rtn);
+
+							}
+							
+
+					} else {
+
+						rtn.err = 'User not found.';
+						callback(rtn);
+					
+					}		
 
 				}
 
@@ -26,27 +65,87 @@ exports = module.exports = function(sockey,run,sock,callback) {
 
 		},
 
-		login: function(sockey,run,data,emit,cb) {
+		registration: function(sockey,run,user,callback) {
 
-			var that = this;
-			this.modules.auths.login(sockey,run,data.user,function(l){
+			var rtn = {
+				ok:false,
+				err:false,
+				res:false,
+			};
 
-				if (l.ok === true) {
+			sockey.db.exec("SELECT id FROM users WHERE name = ?",user.name,run,function(a){
 
-					emit.ok = true,
-					emit.res = l.res;
-					cb(emit);
+				if (a.ok === true) {
+					
+					if (a.res.length > 0) {
 
+						rtn.err = 'User name already in use.';
+						callback(rtn);
+
+					} else {
+
+
+						var ins = {
+							name: user.name,
+							date_register:Math.floor(Date.now() / 1000)
+						};
+						
+						var bcrypt = require('bcryptjs');
+						ins.password = bcrypt.hashSync(user.password,bcrypt.genSaltSync(10));
+
+						if (typeof user.email !== 'undefined') {
+
+							ins.email = user.email;
+
+						}
+
+						run.db.query("INSERT INTO users SET ?",ins,function(c,b) {
+							
+							if (c == null) {
+
+								var token = sockey.token.generate();
+								run.db.query('INSERT INTO user_keys SET ?', {
+									user_id:b.insertId,
+									tokey: token,
+									insdate:(Math.floor(Date.now() / 1000)), 
+								},function(err, result) {
+
+									if (err) {
+										
+										rtn.err = 'Insert Tokey Error.';
+										callback(rtn);
+									
+									} else {
+
+										rtn.ok = true;
+										rtn.res = {name:user.name,token:token};
+										callback(rtn);
+
+									}
+
+								});
+
+							} else {
+
+								rtn.err = 'Error inserting user.';
+								callback(rtn);
+
+							}
+
+						});
+
+					}
+					
 				} else {
 
-					emit.err = l.err
-					cb(emit);
+					rtn.err = 'Username query failed.';
+					callback(rtn);
 
 				}
-
+				
 			});
 
-		}
+		},
 
 	};
 
@@ -101,7 +200,6 @@ exports = module.exports = function(sockey,run,sock,callback) {
 
 			if (emit.err === false) {
 
-				local.modules.auths = require('../models/auths');
 				if (data.type === 'register') {
 
 					var validator = require('validator');
@@ -119,7 +217,7 @@ exports = module.exports = function(sockey,run,sock,callback) {
 
 											if (validator.isEmail(data.user.email) === true) {
 
-												local.registration(sockey,run,data,emit,function(reg) {
+												local.registration(sockey,run,data.user,function(reg) {
 
 													var emitter = local.emitters.error;
 													if (reg.ok === true ) {
@@ -151,7 +249,7 @@ exports = module.exports = function(sockey,run,sock,callback) {
 									} else {
 
 										data.user.email = null;
-										local.registration(sockey,data,emit,function(reg){
+										local.registration(sockey,run,data.user,function(reg){
 
 											var emitter = local.emitters.error;
 											if (reg.ok === true) {
@@ -201,7 +299,7 @@ exports = module.exports = function(sockey,run,sock,callback) {
 
 				if (data.type === 'login') {
 
-					local.login(sockey,run,data,emit,function(li){
+					local.login(sockey,run,data.user,function(li){
 
 						var emitter = local.emitters.error;
 						if (li.ok === true) {
