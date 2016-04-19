@@ -1,4 +1,4 @@
-# ![alt text](https://raw.githubusercontent.com/cgraamans/sockey/master/client/img/logo.png "Sockey!") Sockey!
+# ![alt text](https://raw.githubusercontent.com/cgraamans/sockey/master/client/img/logo48.png "Sockey!") Sockey!
 
 ## Easy and Lightweight Standalone Nodejs Socket.io MVC Framework
 
