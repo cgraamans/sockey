@@ -100,7 +100,19 @@ Many thanks to those folks for their contributions to programming.
 
 . [(OPTIONAL) User Registration, Login and Token authorization](#step-4-optional-user-registration-login-and-token-authorization)
 
+. . [How does it work?](#how-does-it-work)
+
+. . [Set auth options](#set-auth-options)
+
+. . [Registration](#registration)
+
+. . [Login](#login)
+
+. . [Checking a token](#checking-a-token)
+
 ## Installation
+
+Below are the instructions for installing Sockey to a (linux) server and how to set it up. How to use Sockey is covered in the subsequent 'Usage' section.
 
 ### Requirements
 
@@ -250,12 +262,11 @@ A brief summary would be:
 - Create a controller
 - Emit something from the controller / Action stuff in the database via a model
 
-See the included [example.js / example-keytest ](https://github.com/cgraamans/sockey/tree/master/server/controllers) controllers.
+See the included [example.js / example-keytest](https://github.com/cgraamans/sockey/tree/master/server/controllers) controllers.
 
 Good things to watch out for when programming:
 
 - Returning Timers via the dataCallback variable for closure
-- leave the _auth.js controller alone. Only remove if you also remove the route.
 
 Nice to know:
 
@@ -273,7 +284,7 @@ Sockey uses an object/function design model, where function are extensions of ob
 - __sockey.modules__: Globaly available modules
 - __sockey.io__: initialized socket.io engine
 - __sockey.db__: Database connectivity and management functionalities
-- __sockey.token__: Token generation, update and checking functionalities
+- __sockey.token__: Token generation, update and checking functionalities (helper)
 
 #### SOCKET-LEVEL
 
@@ -302,7 +313,7 @@ Then, change the example route or add a new object to the routes array.
 
 In this context sock is the incomming socket designation (string), the controller is the path to the controller's file relative to the controller directory.
 
-_NOTE:_ Do not remove the auth designation if you intend to use the authorization module. If you're looking for sockey without an auth module there is the separate [sockey-core project](https://github.com/cgraamans/sockey-core)
+_NOTE:_ If you're looking for sockey without an auth module there is the separate [sockey-core project](https://github.com/cgraamans/sockey-core)
 
 ### Step 2: Create a controller
 
@@ -473,4 +484,112 @@ run.db.query('UPDATE table SET ? WHERE ?',[set,{user_id: user.id,}],function(err
 
 ### Step 4 (optional): User Registration, Login and Token authorization.
 
-.. TBD ...
+Sockey comes with its own authorization module, loaded in the form of two helpers. The auth helper is for the direct logins and registration from users while the token helper is for the generation and checking of user tokens to verify logins.
+
+#### How does it work?
+
+The user registers a username and password (and email if set in the options). This is sent to the socket the user is connected to, to the 'auth' route (also alterable in the options). The users password and username (and email) are checked for validity. If valid, the password is encrypted and it and the username are inserted into the user database table.
+
+Once the user's core information has been inserted into the user table, a new 'token' is generated for the user. This token is not in any way related to the database and is guaranteed to be unique. Once the unique key has been generated it is associated with the user account (via the user_keys table).
+
+After this moment the username / token combination are used by the user to identify themselves to each socket when a login is required for a functionality.
+
+Logging in is similar. The user's password is encrypted and the username / encrypted password are compared to the stored password in the user_keys database table. If these are one and the same, a new token is generated and replaces the token which is set for the user in the database.
+
+Checking the token can be done within the used socket with the __sockey.token.check() function__. This will return the user's id if logged in (or not if logged in). If the login is successful but the token inserted date is less than the time the user logs in minus the token timeout value in lib/options.js, the user is given a newly generated token.
+
+Note: At no point except when sending passwords to login and registration are passwords ever clear-text. To minimize third party interceptions, please make sure to use SSL for Apache. 
+
+#### Set Auth Options
+
+Open the lib/options.js file and navigate to the auth object.
+
+We'll run through the settings:
+
+__socket__: Name of the socket you'll be getting automatic messages from and pushing to. This is for routing of token updates and login/registration routing.
+
+__register_email__: Do you wish the user to have to register with username and email address or just username?
+
+__token_timeout__: How long can the user be logged in before a new token is required from the user.
+
+__lengths__: How short/long do the passwords and the username have to be to be valid (min/max per type)? 
+
+#### Registration
+
+The user sends the user information as a sub-object, accompanied by the type of authorization request:
+
+```javascript
+var pass = {type:'register',user:{}};
+
+pass.user.name = $(this).find('input[name="name"]').val();
+pass.user.email = $(this).find('input[name=email]').val();
+pass.user.password = $(this).find('input[name=password]').val();
+
+socket.emit('auth',pass);
+```
+
+The socket will return socket auth_data for any token information and auth_error if an error is detected.
+
+#### Login
+
+The login sends username and password as well as a true/false value for the 'Remember me' functionality (called `persistent` in user_keys).
+
+```javascript
+var pass = {type:'login',user:{}};
+
+pass.user.name = $(this).find('input[name="name"]').val();
+pass.user.password = $(this).find('input[name=password]').val();
+pass.user.persistent = $(this).find('input[name=rememberme]').is(':checked');
+
+socket.emit('auth',pass);
+
+```
+
+#### Checking a Token
+
+To check a token, the username and the token needs to be passed to sockey like so...
+
+```javascript
+var pass = {
+
+    user:{},
+    lala:{bla:'blabla'},
+    more_stuff:'bladiebladiebla'
+
+};
+
+pass.user.name = $(this).find('input[name="name"]').val();
+pass.user.key = $(this).find('input[name=key]').val();
+
+socket.emit('keytest',pass);
+```
+
+In the controller do:
+
+```javascript
+sockey.token.check(sockey,run,data.user,function(u){
+
+
+    var usedSocket;
+    if (u.ok === true) {
+
+        //
+        // Your Code Goes Here
+        //
+        // Note: u.res is returned as the user's id in this case. Use it wisely for your database queries.
+
+        usedSocket = sock+sockey.opt.socket.data;
+
+    } else {
+
+        usedSocket = sock+sockey.opt.socket.error;
+        emit.err = u.err;
+        run.socket.emit(usedSocket,{ok:false,err:u.err,res:false});
+
+    }
+    callback(dataCallback); // Note, this callback is in the brackets because it's __within an asynchronous call__ here.
+
+});
+```
+
+If the user is logged in, the user's id is passed back (u.res). Use this for any user-based database queries within the asynchronous call. Note that if you don't want to nest functions, the async module (available via npm) is your best friend.
