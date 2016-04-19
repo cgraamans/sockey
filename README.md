@@ -1,6 +1,6 @@
 # ![alt text](https://raw.githubusercontent.com/cgraamans/sockey/master/client/img/logo48.png "Sockey!") Sockey!
 
-## Easy and Lightweight Standalone Nodejs Socket.io MVC Framework
+## Easy Lightweight Standalone Nodejs Socket.io MVC Framework
 
 Sockey is a Server-side socket.io framework, specifically made to divorce server-side and client-side processing.
 
@@ -64,11 +64,19 @@ Many thanks to those folks for their contributions to programming.
 
 [Usage](#usage)
 
+. [Quickstart](#quickstart)
+
+. [Sockey functionalities](#sockey-functionalities)
+
+. . [GLOBALLY AVALIABLE](#globally-available)
+
+. . [SOCKET-LEVEL](#socket-level)
+
 . [Create a Route](#step-1-create-a-route)
 
 . [Create a Controller](#step-2-create-a-controller)
 
-. . [Sockey functions](#sockey-functions)
+. . [Sockey functionalities](#sockey-functionalities)
 
 . . [Examples](#examples)
 
@@ -79,6 +87,8 @@ Many thanks to those folks for their contributions to programming.
 . . . [Timers and Intervals in a controller function](#timers-and-intervals-in-a-controller-function)
 
 . [Create your Models](#step-3-optional-create-your-models)
+
+. . [Example module template](#example-module-template)
 
 . . [Database SELECT](#example-database-select)
 
@@ -211,6 +221,49 @@ Make a separate apache host pointing to the directory.
 
 ## Usage
 
+Below you will find usage guides and examples for sockey.
+
+### Quickstart
+
+A brief summary would be:
+
+- Create a route
+- Create a controller
+- Emit something from the controller / Action stuff in the database via a model
+
+See the included [example.js / example-keytest ](https://github.com/cgraamans/sockey/tree/master/server/controllers) controllers.
+
+Good things to watch out for when programming:
+
+- Returning Timers via the dataCallback variable for closure
+- leave the _auth.js controller alone. Only remove if you also remove the route.
+
+Nice to know:
+
+- All database connections for the socket are closed on socket disconnect. No need to fuss.
+
+Have fun!
+
+### Sockey functionalities
+
+Sockey uses an object/function design model, where function are extensions of objects loaded asynchronously. Here's a list of global and local objects and their included functions.
+
+#### GLOBALLY AVALIABLE
+
+- __sockey.opt__: Sockey options (/server/lib/options.js)
+- __sockey.modules__: Globaly available modules
+- __sockey.io__: initialized socket.io engine
+- __sockey.db__: Database connectivity and management functionalities
+- __sockey.token__: Token generation, update and checking functionalities
+
+#### SOCKET-LEVEL
+
+- run.db: the initialized database connection
+
+Each individual socket initialized by a recieved event will have its own database connection made. This is where all database queries should be made. See the [Models examples below].
+
+- run.socket: the initialized socket in the controller.
+
 ### Step 1: Create a route
 
 First, edit your routes file.
@@ -262,24 +315,6 @@ exports = module.exports = function(sockey,run,sock,callback) {
 ```
 
 _NOTE:_ The data callback is to kill off any timer or interval processes you want to start in the controller. Allowing these to keep running after client disconnection will create an incredible memory leak. Make sure you always add a timer or an interval to the dataCallback object (see below).
-
-#### Objects and their functions
-
-Sockey uses an object/function design model, where function are extensions of objects loaded asynchronously. Here's a list of global and local objects and their included functions.
-
-##### GLOBAL
-
-- __sockey.opt__: Import from lib/options.js
-- __sockey.modules__: Auto-loaded modules
-- __sockey.io__: initialized socket.io engine
-- __sockey.db__: Database connectivity and management functionalities
-- __sockey.token__: Token generation and checking functionalities
-- __sockey.modules__: Globally loaded modules
-
-##### SOCKET-LEVEL
-
-- run.db: the initialized database connection
-- run.socket: the initialized socket in the controller.
 
 #### Examples
 
@@ -347,7 +382,7 @@ Fill the object with your required models (functions and variables for database 
 function(sockey,run,data,callback) {}
 ```
 
-Example template for a module:
+#### Example module template
 
 ```javascript
 module.exports = {
