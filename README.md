@@ -62,6 +62,8 @@ Many thanks to those folks for their contributions to programming.
 
 . [Test Client Setup](#step-6-optional-test-client-setup)
 
+. [Run Your Server](#step-7-run-your-server)
+
 [Usage](#usage)
 
 . [Quickstart](#quickstart)
@@ -202,7 +204,7 @@ You will have to create an internal proxy to link the apache webhost to Sockey. 
     ProxyPass        /socket.io http://localhost:8081/socket.io
     ProxyPassReverse /socket.io http://localhost:8081/socket.io
 ```
-_NOTE:_ There is an example for you in the _init/apache2_ directory you can use in a pinch.
+_NOTE:_ There is an example for you in the _init/apache2_ directory you can use in a pinch. Also, restart your apache2 service after any changes!
 
 ### Step 5 (optional): Upstart Setup
 
@@ -218,6 +220,23 @@ npm install
 ```
 
 Make a separate apache host pointing to the directory.
+
+### Step 7: Run Your Server
+
+To run your server, navigate to the server directory and run the app.js file ... like so:
+
+```bash
+cd <some>/<place>/sockey/server
+nodejs app.js
+```
+
+If you have included an upstart service you can start the service instead... which is preferable, if you have the option. You can also restart and stop the service.
+
+```bash
+sudo service sockey start
+```
+
+_NOTE:_ logging needs to be set in the upstart file in /etc/init/sockey.conf (or whatever you want to call it);
 
 ## Usage
 
