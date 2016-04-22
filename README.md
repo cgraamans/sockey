@@ -43,12 +43,15 @@ Sockey was written to be a quick standalone setup. Therefore there are a number 
 - [Socket.io](http://socket.io)
 - [FelixGe's MYSQL](https://github.com/felixge/node-mysql)
 - [bcryptjs](https://github.com/dcodeIO/bcrypt.js)
+- [validator](https://github.com/chriso/validator.js)
 
 Many thanks to those folks for their contributions to programming.
 
 ## HowTO
 
 [Installation](#installation)
+
+. [Requirements](#requirements)
 
 . [Sockey Setup](#step-1-sockey-setup)
 
