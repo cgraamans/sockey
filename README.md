@@ -25,7 +25,7 @@ Sockey is an attempt at a small-scale MVC framework to bridge the gap for progra
 
 To get Sockey to work _you will need a client application and a server application_. The client application can be served to the user in the form of an app (Web-browser page, iOS or Android or Windows-Phone). The server application can run on any linux-box utilizing apache2 (or other webservers - though I wouldn't know how - yet) and nodejs.
 
-A sample client webpage is included.
+A sample client webpage is included, though, if you're looking for something a little more structured I recommend __[angular-bootey](http://github.com/cgraamans/angular-bootey)__.
 
 ### Sockey includes...
 
