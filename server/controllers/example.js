@@ -1,4 +1,4 @@
-exports = module.exports = function(sockey,run,sock,callback) {
+exports = module.exports = function(sockey,$state,sock,callback) {
 
 
 	return function(data) {
@@ -13,14 +13,14 @@ exports = module.exports = function(sockey,run,sock,callback) {
 				var examples = require('../models/examples');
 
 				// Emit on receival
-				run.socket.emit(sock+sockey.opt.socket.data,{
+				$state.socket.emit(sock+sockey.opt.socket.data,{
 					"message":"Recieved Example Request"
 				});
 
 				// INTERVALS: This is how you do Intervals
 				var interval = setInterval(function(){
 
-					run.socket.broadcast.emit(sock+sockey.opt.socket.data,{
+					$state.socket.broadcast.emit(sock+sockey.opt.socket.data,{
 						"message":"Global Timed Emit To Everyone But User Every 5 seconds"
 					});
 

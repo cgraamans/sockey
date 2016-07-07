@@ -7,7 +7,7 @@ module.exports = {
 
 	},
 
-	check: function(sockey,run,user,callback) {
+	check: function(sockey,$state,user,callback) {
 
 		var that = this;
 
@@ -27,7 +27,7 @@ module.exports = {
 					timeout:4000,
 				};
 
-				run.db.query(keycheck, function (error, results) {
+				$state.db.query(keycheck, function (error, results) {
 
 					if (error === null) {
 
@@ -43,14 +43,14 @@ module.exports = {
 								} else {
 
 									user.id = results[0].id;
-									that.update(sockey,run,user,function(ree) {
+									that.update(sockey,$state,user,function(ree) {
 
 										if (ree.ok === true) {
 
 											rtn.ok = true;
 											rtn.res = results[0].id;
 
-											run.socket.emit(sockey.opt.auth.socket+sockey.opt.socket.data,{
+											$state.socket.emit(sockey.opt.auth.socket+sockey.opt.socket.data,{
 												ok:true,
 												res:ree.res,
 												err:false,
@@ -107,7 +107,7 @@ module.exports = {
 
 	},
 
-	update: function(sockey,run,user,callback) {
+	update: function(sockey,$state,user,callback) {
 
 		var that = this;
 
@@ -139,7 +139,7 @@ module.exports = {
 
 		}
 
-		run.db.query('UPDATE user_keys SET ? WHERE ?',[set,{user_id: user.id,}],function(err,result) {
+		$state.db.query('UPDATE user_keys SET ? WHERE ?',[set,{user_id: user.id,}],function(err,result) {
 
 			if (err) {
 

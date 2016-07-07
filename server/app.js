@@ -35,10 +35,10 @@ routes.route.push({
 
 sockey.io.on('connection', function(socket) {
 
-	var run = {};
+	var $state = {};
 
-	run.db = sockey.db.connect(sockey.opt.db);
-	run.socket = socket;
+	$state.db = sockey.db.connect(sockey.opt.db);
+	$state.socket = socket;
 
 
 	// User Routes
@@ -46,7 +46,7 @@ sockey.io.on('connection', function(socket) {
 
 		socket.on(route.sock,function(data) {
 
-			require(route.controller)(sockey,run,route.sock,function(times){
+			require(route.controller)(sockey,$state,route.sock,function(times){
 
 				if (typeof times !== 'undefined') {
 
@@ -86,7 +86,7 @@ sockey.io.on('connection', function(socket) {
 			clearTimeout(iv);
 		});
 
-		run.db.end();
+		$state.db.end();
 
 	});
 

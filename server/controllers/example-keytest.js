@@ -3,7 +3,7 @@
 
 	Note, this is asynchronous. Use the async module to use this in a synchronous context.
 */
-exports = module.exports = function(sockey,run,sock,callback) {
+exports = module.exports = function(sockey,$state,sock,callback) {
 
 
 	return function(data) {
@@ -20,7 +20,7 @@ exports = module.exports = function(sockey,run,sock,callback) {
 			if (typeof data.user === 'undefined') {
 
 				emit.err = 'User data not passed.'
-				run.socket.emit(sock+sockey.opt.socket.error,emit);
+				$state.socket.emit(sock+sockey.opt.socket.error,emit);
 				callback(dataCallback);
 
 			} else {
@@ -28,7 +28,7 @@ exports = module.exports = function(sockey,run,sock,callback) {
 				if (typeof data.user.key === 'undefined') {
 
 					emit.err = 'User key not passed.';
-					run.socket.emit(sock+sockey.opt.socket.error,emit);
+					$state.socket.emit(sock+sockey.opt.socket.error,emit);
 					callback(dataCallback);
 
 				} else {
@@ -36,12 +36,12 @@ exports = module.exports = function(sockey,run,sock,callback) {
 					if (typeof data.user.name === 'undefined') {
 
 						emit.err = 'User name not passed.';
-						run.socket.emit(sock+sockey.opt.socket.error,emit);
+						$state.socket.emit(sock+sockey.opt.socket.error,emit);
 						callback(dataCallback);
 
 					} else {
 
-						sockey.token.check(sockey,run,data.user,function(u){
+						sockey.token.check(sockey,$state,data.user,function(u){
 
 
 							var usedSocket;
@@ -62,7 +62,7 @@ exports = module.exports = function(sockey,run,sock,callback) {
 								emit.err = u.err;
 
 							}
-							run.socket.emit(usedSocket,emit);
+							$state.socket.emit(usedSocket,emit);
 							callback(dataCallback);
 
 						});

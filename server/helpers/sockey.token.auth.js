@@ -1,10 +1,10 @@
-exports = module.exports = function(sockey,run,sock,callback) {
+exports = module.exports = function(sockey,$state,sock,callback) {
 
 	var local = {
 
 		emitters:{},
 
-		login: function(sockey,run,user,callback) {
+		login: function(sockey,$state,user,callback) {
 
 			var rtn = {
 				ok:false,
@@ -12,7 +12,7 @@ exports = module.exports = function(sockey,run,sock,callback) {
 				res:false,
 			};
 
-			sockey.db.exec("SELECT id, password FROM users WHERE name = ?",user.name,run,function(a){
+			sockey.db.exec("SELECT id, password FROM users WHERE name = ?",user.name,$state,function(a){
 
 				if (a.ok === false) {
 
@@ -27,7 +27,7 @@ exports = module.exports = function(sockey,run,sock,callback) {
 							if (bcrypt.compareSync(user.password,a.res[0].password) === true) {
 
 								user.id = a.res[0].id;
-								sockey.token.update(sockey,run,user,function(arr){
+								sockey.token.update(sockey,$state,user,function(arr){
 
 									if (arr.ok === true) {
 
@@ -65,7 +65,7 @@ exports = module.exports = function(sockey,run,sock,callback) {
 
 		},
 
-		registration: function(sockey,run,user,callback) {
+		registration: function(sockey,$state,user,callback) {
 
 			var rtn = {
 				ok:false,
@@ -73,7 +73,7 @@ exports = module.exports = function(sockey,run,sock,callback) {
 				res:false,
 			};
 
-			sockey.db.exec("SELECT id FROM users WHERE name = ?",user.name,run,function(a){
+			sockey.db.exec("SELECT id FROM users WHERE name = ?",user.name,$state,function(a){
 
 				if (a.ok === true) {
 					
@@ -99,12 +99,12 @@ exports = module.exports = function(sockey,run,sock,callback) {
 
 						}
 
-						run.db.query("INSERT INTO users SET ?",ins,function(c,b) {
+						$state.db.query("INSERT INTO users SET ?",ins,function(c,b) {
 							
 							if (c == null) {
 
 								var token = sockey.token.generate();
-								run.db.query('INSERT INTO user_keys SET ?', {
+								$state.db.query('INSERT INTO user_keys SET ?', {
 									user_id:b.insertId,
 									tokey: token,
 									insdate:(Math.floor(Date.now() / 1000)), 
@@ -217,7 +217,7 @@ exports = module.exports = function(sockey,run,sock,callback) {
 
 											if (validator.isEmail(data.user.email) === true) {
 
-												local.registration(sockey,run,data.user,function(reg) {
+												local.registration(sockey,$state,data.user,function(reg) {
 
 													var emitter = local.emitters.error;
 													if (reg.ok === true ) {
@@ -225,7 +225,7 @@ exports = module.exports = function(sockey,run,sock,callback) {
 														emitter = local.emitters.data;
 													
 													}
-													run.socket.emit(emitter,reg);
+													$state.socket.emit(emitter,reg);
 													callback(dataCallback);
 
 												});
@@ -233,7 +233,7 @@ exports = module.exports = function(sockey,run,sock,callback) {
 											} else {
 
 												emit.err = 'Email address is invalid.';
-												run.socket.emit(run.emitters.error,emit);
+												$state.socket.emit($state.emitters.error,emit);
 												callback(dataCallback);
 
 											}
@@ -241,7 +241,7 @@ exports = module.exports = function(sockey,run,sock,callback) {
 										} else {
 
 											emit.err = 'Email address needed.';
-											run.socket.emit(run.emitters.error,emit);
+											$state.socket.emit($state.emitters.error,emit);
 											callback(dataCallback);
 
 										}
@@ -249,7 +249,7 @@ exports = module.exports = function(sockey,run,sock,callback) {
 									} else {
 
 										data.user.email = null;
-										local.registration(sockey,run,data.user,function(reg){
+										local.registration(sockey,$state,data.user,function(reg){
 
 											var emitter = local.emitters.error;
 											if (reg.ok === true) {
@@ -257,7 +257,7 @@ exports = module.exports = function(sockey,run,sock,callback) {
 												emitter = local.emitters.data;
 											
 											}
-											run.socket.emit(emitter,reg);
+											$state.socket.emit(emitter,reg);
 											callback(dataCallback);
 
 										});
@@ -266,7 +266,7 @@ exports = module.exports = function(sockey,run,sock,callback) {
 								} else {
 
 									emit.err = 'Password must contain letters and at least one special character and one number.';
-									run.socket.emit(run.emitters.error,emit);
+									$state.socket.emit($state.emitters.error,emit);
 									callback(dataCallback);
 
 								}
@@ -274,7 +274,7 @@ exports = module.exports = function(sockey,run,sock,callback) {
 							} else {
 
 								emit.err = 'Password must be between 6 and 60 characters long.';
-								run.socket.emit(run.emitters.error,emit);
+								$state.socket.emit($state.emitters.error,emit);
 								callback(dataCallback);
 
 							}							
@@ -282,7 +282,7 @@ exports = module.exports = function(sockey,run,sock,callback) {
 						} else {
 
 							emit.err = 'Usernames may contain letters, special characters and numbers.';
-							run.socket.emit(run.emitters.error,emit);
+							$state.socket.emit($state.emitters.error,emit);
 							callback(dataCallback);
 
 						}
@@ -290,7 +290,7 @@ exports = module.exports = function(sockey,run,sock,callback) {
 					} else {
 
 						emit.err = 'User name must be between 3 and 32 Characters..';
-						run.socket.emit(run.emitters.error,emit);
+						$state.socket.emit($state.emitters.error,emit);
 						callback(dataCallback);
 
 					}
@@ -299,7 +299,7 @@ exports = module.exports = function(sockey,run,sock,callback) {
 
 				if (data.type === 'login') {
 
-					local.login(sockey,run,data.user,function(li){
+					local.login(sockey,$state,data.user,function(li){
 
 						var emitter = local.emitters.error;
 						if (li.ok === true) {
@@ -307,7 +307,7 @@ exports = module.exports = function(sockey,run,sock,callback) {
 							emitter = local.emitters.data;
 
 						}
-						run.socket.emit(emitter,li);
+						$state.socket.emit(emitter,li);
 						callback(dataCallback);
 
 					});
@@ -316,7 +316,7 @@ exports = module.exports = function(sockey,run,sock,callback) {
 
 			} else {
 
-				run.socket.emit(run.emitters.error,emit);
+				$state.socket.emit($state.emitters.error,emit);
 				callback(dataCallback);
 
 			}

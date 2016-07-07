@@ -10,7 +10,7 @@ module.exports = {
 
 		},
 
-		exec: function(sql_str,val,run,callback){
+		exec: function(sql_str,val,$state,callback){
 
 			var rtn = {
 				ok:false,
@@ -32,11 +32,11 @@ module.exports = {
 			}
 			
 
-			if (typeof run.db !== 'undefined') {
+			if (typeof $state.db !== 'undefined') {
 
-				if (run.db !== false) {
+				if ($state.db !== false) {
 
-					run.db.query(simple, function(error,rslt) {
+					$state.db.query(simple, function(error,rslt) {
 
 						if (error) {
 							rtn.err = error;
