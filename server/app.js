@@ -1,31 +1,15 @@
 // Initialize Application
-var sockey = require('./lib/sockey');
-	sockey.opt = require('./lib/options'),
-	sockey.io = require('socket.io')(sockey.opt.port),
-	sockey.modules = {},
+var sockey = require('./lib/sockey'),
 	routes = require('./lib/routes'),
-	timers = intervals = [],
-	sockey.helpers = {};
-
-// Global NodeJS Modules
-sockey.opt.modules.forEach(function(load) {
-
-	sockey.modules[load.name] = require(load.mod);
-
-});
-
-// Global Sockey Helpers
-sockey.opt.helpers.forEach(function(helper){
-
-	if (!(helper in sockey)) {
-
-		sockey[helper] = require('./helpers/sockey.'+helper);
-
-	}
-
-});
+	timers = intervals = [];
+	
+// Start Sockey
+sockey.init();
 
 // For authorizations, you will need a separate route to the sockey.token.auth library 
+// 
+// Note: Comment this if you do not want token authorisation enabled.
+//
 routes.route.push({
 
 	controller:'./helpers/sockey.token.auth',
@@ -35,18 +19,25 @@ routes.route.push({
 
 sockey.io.on('connection', function(socket) {
 
-	var $state = {};
+	// $state 
+	// - This is the current 'state' of the application, with all its variables
+	var $state = require('./lib/state');
 
-	$state.db = sockey.db.connect(sockey.opt.db);
-	$state.socket = socket;
+	// Prepare the $state.
+	// - Every connection has a connection to the database prepared.
+	// - The Current Socket is added
+	// - Emitters are prepared for launch!
+	$state.db = sockey.db.connect(sockey.opt.db),
+	$state.socket = socket,
+	$state.emitters = sockey.opt.returns;
 
+	// console.log($state);
 
-	// User Routes
 	routes.route.forEach(function(route) {
+		$state.socket.on(route.sock,function(data) {
 
-		socket.on(route.sock,function(data) {
-
-			require(route.controller)(sockey,$state,route.sock,function(times){
+			$state.socketName = route.sock;
+			require(route.controller)(sockey,$state,function(times){
 
 				if (typeof times !== 'undefined') {
 
@@ -74,7 +65,7 @@ sockey.io.on('connection', function(socket) {
 
 	});
 
-	socket.on('disconnect',function(){
+	$state.socket.on('disconnect',function(){
 
 		// clear all intervals, if passed
 		intervals.forEach(function(iv){	
@@ -88,6 +79,7 @@ sockey.io.on('connection', function(socket) {
 
 		$state.db.end();
 
+		console.log($state.test);
 	});
 
 });

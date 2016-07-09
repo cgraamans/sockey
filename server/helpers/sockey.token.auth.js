@@ -152,7 +152,7 @@ exports = module.exports = function(sockey,$state,sock,callback) {
 	return function(data) {
 
 		// Note: Data is the request object passed by the socket.
-		var dataCallback = {timers:[],intervals:[]};
+		var timings = {timers:[],intervals:[]};
 
 		// CONTROLLER CODE
 			
@@ -226,7 +226,7 @@ exports = module.exports = function(sockey,$state,sock,callback) {
 													
 													}
 													$state.socket.emit(emitter,reg);
-													callback(dataCallback);
+													callback(timings);
 
 												});
 
@@ -234,7 +234,7 @@ exports = module.exports = function(sockey,$state,sock,callback) {
 
 												emit.err = 'Email address is invalid.';
 												$state.socket.emit($state.emitters.error,emit);
-												callback(dataCallback);
+												callback(timings);
 
 											}
 
@@ -242,7 +242,7 @@ exports = module.exports = function(sockey,$state,sock,callback) {
 
 											emit.err = 'Email address needed.';
 											$state.socket.emit($state.emitters.error,emit);
-											callback(dataCallback);
+											callback(timings);
 
 										}
 										
@@ -258,7 +258,7 @@ exports = module.exports = function(sockey,$state,sock,callback) {
 											
 											}
 											$state.socket.emit(emitter,reg);
-											callback(dataCallback);
+											callback(timings);
 
 										});
 									}
@@ -267,7 +267,7 @@ exports = module.exports = function(sockey,$state,sock,callback) {
 
 									emit.err = 'Password must contain letters and at least one special character and one number.';
 									$state.socket.emit($state.emitters.error,emit);
-									callback(dataCallback);
+									callback(timings);
 
 								}
 
@@ -275,7 +275,7 @@ exports = module.exports = function(sockey,$state,sock,callback) {
 
 								emit.err = 'Password must be between 6 and 60 characters long.';
 								$state.socket.emit($state.emitters.error,emit);
-								callback(dataCallback);
+								callback(timings);
 
 							}							
 
@@ -283,7 +283,7 @@ exports = module.exports = function(sockey,$state,sock,callback) {
 
 							emit.err = 'Usernames may contain letters, special characters and numbers.';
 							$state.socket.emit($state.emitters.error,emit);
-							callback(dataCallback);
+							callback(timings);
 
 						}
 
@@ -291,7 +291,7 @@ exports = module.exports = function(sockey,$state,sock,callback) {
 
 						emit.err = 'User name must be between 3 and 32 Characters..';
 						$state.socket.emit($state.emitters.error,emit);
-						callback(dataCallback);
+						callback(timings);
 
 					}
 
@@ -308,7 +308,7 @@ exports = module.exports = function(sockey,$state,sock,callback) {
 
 						}
 						$state.socket.emit(emitter,li);
-						callback(dataCallback);
+						callback(timings);
 
 					});
 
@@ -317,7 +317,7 @@ exports = module.exports = function(sockey,$state,sock,callback) {
 			} else {
 
 				$state.socket.emit($state.emitters.error,emit);
-				callback(dataCallback);
+				callback(timings);
 
 			}
 

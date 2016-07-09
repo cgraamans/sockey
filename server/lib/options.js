@@ -24,7 +24,7 @@ module.exports = {
 	},
 
 	// Socket return suffixes
-	socket: { 
+	returns: { 
 		error:'_error',
 		data:'_data',
 	}, // These are default emitter return suffixes. Error and Data are added to the emitter to send to the client, depending on the result of the processing of the client's query. 

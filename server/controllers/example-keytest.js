@@ -3,14 +3,15 @@
 
 	Note, this is asynchronous. Use the async module to use this in a synchronous context.
 */
-exports = module.exports = function(sockey,$state,sock,callback) {
+exports = module.exports = function(sockey,$state,callback) {
 
 
 	return function(data) {
 		// Note: Data is the request object passed by the socket.
-		var dataCallback = {timers:[],intervals:[]};
+		var timings = {timers:[],intervals:[]};
 
 		// CONTROLLER CODE
+
 
 			var emit = {
 				ok:false,
@@ -19,51 +20,44 @@ exports = module.exports = function(sockey,$state,sock,callback) {
 
 			if (typeof data.user === 'undefined') {
 
-				emit.err = 'User data not passed.'
-				$state.socket.emit(sock+sockey.opt.socket.error,emit);
-				callback(dataCallback);
+				$state.error('User data not passed.');
+				callback(timings);
 
 			} else {
 
 				if (typeof data.user.key === 'undefined') {
 
-					emit.err = 'User key not passed.';
-					$state.socket.emit(sock+sockey.opt.socket.error,emit);
-					callback(dataCallback);
+					$state.error('User key not passed.');
+					callback(timings);
 
 				} else {
 
 					if (typeof data.user.name === 'undefined') {
 
-						emit.err = 'User name not passed.';
-						$state.socket.emit(sock+sockey.opt.socket.error,emit);
-						callback(dataCallback);
+						$state.error('User name not passed.');
+						callback(timings);
 
 					} else {
 
 						sockey.token.check(sockey,$state,data.user,function(u){
 
-
-							var usedSocket;
 							if (u.ok === true) {
 
 								//
 								// Your Code Goes Here
 								//
-								// Note: u.res is returned as the user's id in this case. Use it wisely for your database queries.
+								// Note: u.res is returned as the user's id.
 
-								usedSocket = sock+sockey.opt.socket.data;
 								emit.ok = true;
 								emit.res = 'User is logged in';
-
+								$state.emit(emit);
 							} else {
 
-								usedSocket = sock+sockey.opt.socket.error;
-								emit.err = u.err;
+								$state.error(u.err);
 
 							}
-							$state.socket.emit(usedSocket,emit);
-							callback(dataCallback);
+
+							callback(timings);
 
 						});
 

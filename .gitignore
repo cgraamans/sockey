@@ -57,4 +57,4 @@ Thumbs.db
 # User ignores
 #
 
-node_modules/*
+node_modules/

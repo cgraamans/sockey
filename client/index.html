@@ -2,7 +2,7 @@
 	<head>
 
 		<script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
-		<script src="/node_modules/socket.io/node_modules/socket.io-client/socket.io.js"></script>
+		<script src="/node_modules/socket.io-client/socket.io.js"></script>
 
 		<style>
 			body {
@@ -177,6 +177,8 @@
 			console.log(socket);
 
 			socket.on('example_data',function(d){
+
+				console.log(d);
 
 				$("#example-text").append(d.message+'<br>');
 
