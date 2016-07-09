@@ -12,7 +12,6 @@ exports = module.exports = function(sockey,$state,callback) {
 
 		// CONTROLLER CODE
 
-
 			var emit = {
 				ok:false,
 				err:false,

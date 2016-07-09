@@ -31,12 +31,13 @@ sockey.io.on('connection', function(socket) {
 	$state.socket = socket,
 	$state.emitters = sockey.opt.returns;
 
-	// console.log($state);
-
+	// Run through the routes
 	routes.route.forEach(function(route) {
 		$state.socket.on(route.sock,function(data) {
 
 			$state.socketName = route.sock;
+
+			// Here require is after socket.on so the whole application isn't loaded into memory
 			require(route.controller)(sockey,$state,function(times){
 
 				if (typeof times !== 'undefined') {
@@ -79,7 +80,6 @@ sockey.io.on('connection', function(socket) {
 
 		$state.db.end();
 
-		console.log($state.test);
 	});
 
 });

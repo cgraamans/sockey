@@ -8,9 +8,7 @@ exports = module.exports = function(sockey,$state,callback) {
 		// CONTROLLER CODE
 
 			// EXAMPLE CODE
-			
-			//testline
-			$state.test = "hah";
+	
 				// Load models first
 				var examples = require('../models/examples');
 
@@ -25,7 +23,7 @@ exports = module.exports = function(sockey,$state,callback) {
 					$state.broadcast({
 						"message":"Timed Emit To Everyone But User Every 3 seconds"
 					});
-					console.log('sock broadcast');
+
 				},3000);
 				timings.intervals.push(interval);
 
@@ -33,7 +31,7 @@ exports = module.exports = function(sockey,$state,callback) {
 				var timeout = setTimeout(function(){
 
 					sockey.emit($state.socketName,{"message":"Once-off Global Emit To Everyone After 10 seconds"});
-					console.log("broadcast");
+
 				},10000);
 				timings.timers.push(timeout);
 
