@@ -1,93 +1,139 @@
-// Initialize Application
-var sockey = require('./lib/sockey');
-	sockey.opt = require('./lib/options'),
-	sockey.io = require('socket.io')(sockey.opt.port),
-	sockey.modules = {},
-	routes = require('./lib/routes'),
-	timers = intervals = [],
-	sockey.helpers = {};
+'use strict';
+
+// Initialize Application In global variable.
+global._s = {
+
+	db:require('./lib/db'),
+	opt:{
+		db:require('./options/db'),
+		socket:require('./options/socket'),
+		common:require('./options/common')
+	},
+	io:false,
+	helpers:{},
+	modules:{},
+	crypto:{
+		jwt:require('jwt-simple'),
+		SHA256:require('crypto-js/sha256'),
+	},
+	tock:0,
+
+};
+
+// NOTE:
+// on load of solar system, calculate number of ticks since start of system and then position on the 360 degrees
 
 // Global NodeJS Modules
-sockey.opt.modules.forEach(function(load) {
+console.log('Executing App');
+try {
 
-	sockey.modules[load.name] = require(load.mod);
+	global._s.io = require('socket.io')(global._s.opt.socket.port);
 
-});
+	global._s.opt.common.modules.forEach(function(load) {
 
-// Global Sockey Helpers
-sockey.opt.helpers.forEach(function(helper){
+		global._s.modules[load.name] = require(load.mod);
 
-	if (!(helper in sockey)) {
+	});
 
-		sockey[helper] = require('./helpers/sockey.'+helper);
+	global._s.db.createPool(global._s.opt.db.settings)
+		.then(function(pool){
 
-	}
+			console.log('- MYSQL Pool Created');
+			global._s.db.pool = pool;
 
-});
+		})
+		.catch(function(err){
 
-// For authorizations, you will need a separate route to the sockey.token.auth library 
-routes.route.push({
+			console.log('Mysql Err');
+			console.log(err);
+			throw(err);
 
-	controller:'./helpers/sockey.token.auth',
-	sock:sockey.opt.auth.socket,
+		});
 
-});
+	setInterval(function(){
 
-sockey.io.on('connection', function(socket) {
+		if(global._s.tock%100 === 0) {
 
-	var run = {};
+			console.log(global._s.tock);
 
-	run.db = sockey.db.connect(sockey.opt.db);
-	run.socket = socket;
+		}
 
+		global._s.tock++;
 
-	// User Routes
-	routes.route.forEach(function(route) {
+		// console.log(sockey.tock);
 
-		socket.on(route.sock,function(data) {
+		// conventions
+		// one tick = 24h in-game
 
-			require(route.controller)(sockey,run,route.sock,function(times){
+		// broadcast tick results
+		// - tick time
+		// - nested node position corrections
+	    // - NPC actions
+		// - individual user tick results
 
-				if (typeof times !== 'undefined') {
+		// to calculate positon corrections
+		// - every 36 degrees (+opt.tick time) user sends correction request
+		// - next tick gives correct position
 
-					if (times.timers.length > 0) {
+	},global._s.opt.common.tick);
+	console.log('- Tick Started');
 
-						times.timers.forEach(function(timer){
-							timers.push(timer);
-						});
+	global._s.io.on('connection', function(socket) {
 
-					}
+		var $state = {
+				ready:false,
+				timers:[],
+				intervals:[],
+			},
+			usr = {
+				ok:false,
+				ban:false
+			};
 
-					if (times.intervals.length > 0) {
+		console.log(' - New User');
+		console.log(socket.id);
 
-						times.intervals.forEach(function(interval){
-							intervals.push(interval);
-						});					
+		$state.ip =	socket.conn.remoteAddress;
+		if (socket.handshake.address.length > 3) {
 
-					}
+			$state.ip = socket.handshake.address;
 
-				}
+		}
+		if (socket.request.client._peername.address.length > 3) {
 
-			})(data);
+			$state.ip = socket.request.client._peername.address;
+
+		}
+		if(socket.handshake.headers['x-forwarded-for'].length > 3) {
+
+			$state.ip = socket.handshake.headers['x-forwarded-for'];
+		
+		}
+
+		let salt = socket.id + (new Date()).getTime() + socket.conn.remoteAddress + socket.handshake.address + socket.request.client._peername.address + socket.handshake.headers['x-forwarded-for'];
+		$state.id = usr.id = global._s.crypto.SHA256(salt).toString();
+
+		socket.on('disconnect',function(){
+
+			(global._s.intervals || []).forEach(function(iv){
+
+				clearInterval(iv);
+
+			});
+
+			(global._s.timers || []).forEach(function(iv){
+
+				clearTimeout(iv);
+
+			});
 
 		});
 
 	});
 
-	socket.on('disconnect',function(){
+} catch(e) {
 
-		// clear all intervals, if passed
-		intervals.forEach(function(iv){	
-			clearInterval(iv);
-		});
+	console.log(e);
+	process.exit(1);
 
-		// clear all timers, if passed
-		timers.forEach(function(iv){	
-			clearTimeout(iv);
-		});
-
-		run.db.end();
-
-	});
-
-});
+}
